@@ -1,0 +1,32 @@
+
+    .directional-button{
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border: 1px solid rgb(56, 56, 56);
+        background-color: rgba(255, 255, 255, 0.521);
+        border-radius: 50% 50% 50% 50%;
+        transform: translate(-50%, 0%);
+        pointer-events: none;
+        
+        // .directional-button{
+        //     position:absolute;
+        //     border: 1px solid black;
+        //     width: $button-width;
+        //     height: $button-height;
+        //     border-radius: 10px 10px 10px 10px;
+        // }
+        // .up-button{
+        //     transform: translateY(-100%);
+        // }
+        // .down-button{
+        //     transform: translateY(100%);
+        // }
+        // .right-button{
+        //     transform: translateX(100%);
+        // }
+        // .left-button{
+        //     transform: translateX(-100%);
+        // }
+    }
+

@@ -1,0 +1,18 @@
+.main-wrapper{
+    display: flex;
+    flex-shrink: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+    border: 1px solid blue;
+    canvas{
+        border: 1px solid red;
+    }
+    button{
+        border: 1px solid green;
+        height:50px;
+
+    }
+}
