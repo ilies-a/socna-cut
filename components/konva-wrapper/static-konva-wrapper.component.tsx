@@ -7,6 +7,7 @@ import { KONVA_WIDTH_SCALE, KONVA_HEIGHT_SCALE, MaterialData } from '@/global';
 import { useSelector } from 'react-redux';
 import { selectMaterialDataDict } from '../../redux/konva/konva.selectors';
 import KonvaMenu from '../konva-menu/konva-menu.component';
+import PreloadWrapper from '../preload-wrapper/preload-wrapper.component';
 
 // type KonvasElementOptionsProps = {
 //     element: JSX.Element | undefined,
@@ -39,7 +40,7 @@ const StaticKonvaWrapper: React.FC = () => {
   const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
 
     return (
-      <div>
+        <PreloadWrapper>
         <Stage width={window.innerWidth * KONVA_WIDTH_SCALE} height={window.innerHeight * KONVA_HEIGHT_SCALE}>
         <Layer>
           {
@@ -70,7 +71,7 @@ const StaticKonvaWrapper: React.FC = () => {
         </Layer>
       </Stage>
       <KonvaMenu/>
-    </div>
+      </PreloadWrapper>
       );
   };
 

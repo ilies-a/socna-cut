@@ -6,3 +6,8 @@ export const selectTouches = createSelector(
   [selectScreenEvent],
   (screenEvent) => screenEvent.touches
 );
+
+export const selectIsRecording = createSelector(
+  [selectScreenEvent],
+  (screenEvent) => screenEvent.isRecording
+);

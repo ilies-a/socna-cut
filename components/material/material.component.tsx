@@ -14,7 +14,8 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     const dispatch = useDispatch();
     const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
 
-    const [image] = useImage('dalle.png');
+    const [image, loadStatus] = useImage('dalle.png');
+    
     // const [widthRatio, setWidthRatio] = useState<number>(0);
         // ()=>{
         //     const materialDataDict2:Map<string, MaterialData> = new Map<string, MaterialData>();
@@ -22,6 +23,10 @@ const Material: React.FC<MaterialProps> = ({id}) => {
         //     return 0;
         // }
         // );
+
+    // useEffect(()=>{
+    //   if(loadStatus === "loaded")alert(loadStatus);
+    // },[loadStatus]);
 
     const materialWidthFromRatio = (widthRatio:number):number => {
         return widthRatio * window.innerWidth * KONVA_WIDTH_SCALE;
