@@ -49,6 +49,10 @@ export class MaterialData {
     this.widthRatio = newWidthRatio;
   }
 
+  setHeight(newHeight: number){
+    this.height = newHeight;
+  }
+
   setIsSelected(isSelected: boolean){
     this.isSelected = isSelected;
   }
@@ -57,4 +61,8 @@ export class MaterialData {
 
   //   );
   // }
+}
+
+export const getSelectedMaterialDataList = ( materialDataDict: { [key: string]: MaterialData }): MaterialData[] => {
+  return Object.keys(materialDataDict).map(key => materialDataDict[key]).filter(materialData => materialData.getIsSelected());
 }

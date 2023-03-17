@@ -1,5 +1,6 @@
 
-    $directional-button-size: 80px;
+$directional-button-size: 80px;
+
     .directional-button{
         position: absolute;
         width: $directional-button-size;
@@ -28,53 +29,4 @@
         // .left-button{
         //     transform: translateX(-100%);
         // }
-        .material-size-input-wrappers{
-            $material-size-input-wrappers-height: 120px;
-
-            position: relative;
-            display: flex;
-            flex-shrink: 1;
-            align-items: center;
-            justify-content: center;
-            height: $material-size-input-wrappers-height;
-            flex-direction: column;
-            transform: translateX(-100%);
-            top: - abs($material-size-input-wrappers-height - $directional-button-size) * 0.5;
-            left:-10px;
-            background-color: white;
-            padding:5px;
-
-            .material-size-input-wrapper{
-                // position: relative;
-                // top:0px;
-                // left: -40px;
-                width: 75px;
-                height:50px;
-                .material-size-input{
-                    width: 70%;
-                    height: 100%;
-                    text-align: center;
-                    border-top: none;
-                    border-left: none;
-                    border-right: none;
-                }
-            }
-    
-            $material-size-left: -90px;
-            .material-width-input-wrapper{
-                // transform: translate(-50%, -50%);
-                // top:-30px;
-                left: $material-size-left;
-            }
-    
-            .material-height-input-wrapper{
-                // transform: translate(-50%, 50%);
-                // top:30px;
-                left: $material-size-left;
-                .size-unit{
-                    font-size: 14px;
-                }
-            }
-        }
-
     }

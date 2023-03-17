@@ -1,0 +1,60 @@
+
+.main-wrapper{
+    position: absolute;
+    height: 0;
+    width: 0;
+    $directional-button-size: 80px;
+
+    .material-size-input-wrappers{
+        $material-size-input-wrappers-height: 150px;//120px;
+        $material-size-input-wrappers-width: 150px;//75px;
+
+        position: relative;
+        display: flex;
+        flex-shrink: 1;
+        align-items: center;
+        justify-content: center;
+        height: $material-size-input-wrappers-height;
+        flex-direction: column;
+        transform: translateX(-100%);
+        top: - abs($material-size-input-wrappers-height - $directional-button-size) * 0.5;
+        left:-10px;
+        background-color: white;
+        padding:5px;
+        width: $material-size-input-wrappers-width;
+
+        .material-size-input-wrapper{
+            // position: relative;
+            // top:0px;
+            // left: -40px;
+            height:60px;
+            .material-size-number-input{
+                width: 70%;
+                height: 50%;
+                text-align: center;
+                border-top: none;
+                border-left: none;
+                border-right: none;
+            }
+        }
+
+        $material-size-left: -90px;
+        .material-width-input-wrapper{
+            // transform: translate(-50%, -50%);
+            // top:-30px;
+            left: $material-size-left;
+        }
+
+        .material-height-input-wrapper{
+            // transform: translate(-50%, 50%);
+            // top:30px;
+            left: $material-size-left;
+            .size-unit{
+                font-size: 14px;
+            }
+            .material-size-number-input{
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

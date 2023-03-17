@@ -13,9 +13,11 @@ type MaterialProps = {
 const Material: React.FC<MaterialProps> = ({id}) => {
     const dispatch = useDispatch();
     const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
+    const [image] = useImage('dalle.png');
 
-    const [image, loadStatus] = useImage('dalle.png');
-    
+    //needed to handle the first unwanted touchend event on selected Material Rect:
+    const [unwantedTouchEnd, setUnwantedTouchEnd] = useState(false); 
+
     // const [widthRatio, setWidthRatio] = useState<number>(0);
         // ()=>{
         //     const materialDataDict2:Map<string, MaterialData> = new Map<string, MaterialData>();
@@ -56,26 +58,49 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     //     [todos, tab]
     //   );
       
-    const toggleSelectMaterial = useMemo(function () {
-      return function () {
+    const setIsSelected = useMemo(function () {
+      return function (isSelected:boolean) {
           const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
           if (!updatedMaterialData) return;
-          updatedMaterialData.setIsSelected(!updatedMaterialData.getIsSelected());
+          updatedMaterialData.setIsSelected(isSelected);
           dispatch(updateMaterialData(updatedMaterialData));
       }
-    }, [materialDataDict, id, dispatch])
+    }, [materialDataDict, id, dispatch]);
 
-    const handleMouseMove = useMemo(function () {
-        return function () {
-            const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
-            if (!updatedMaterialData) return;
-            // updatedMaterialData.path[1][0] += 0.001;
-            // updatedMaterialData.path[2][0] += 0.001;
-            const step = -0.001;
-            updatedMaterialData.setWidthRatio(updatedMaterialData.getWidthRatio() + step);
-            dispatch(updateMaterialData(updatedMaterialData));
+    const handleTouchEnd = useMemo(function () {
+      return function () {
+        if(!unwantedTouchEnd){
+          setUnwantedTouchEnd(true);
+          return;
         }
-    }, [materialDataDict, id, dispatch])
+        const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
+        if (!updatedMaterialData) return;
+        updatedMaterialData.setIsSelected(!updatedMaterialData.getIsSelected());
+        dispatch(updateMaterialData(updatedMaterialData));
+        setUnwantedTouchEnd(false);
+      }
+    }, [materialDataDict, id, dispatch, unwantedTouchEnd]);
+
+    // const toggleSelectMaterial = useMemo(function () {
+    //   return function () {
+    //       const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
+    //       if (!updatedMaterialData) return;
+    //       updatedMaterialData.setIsSelected(!updatedMaterialData.getIsSelected());
+    //       dispatch(updateMaterialData(updatedMaterialData));
+    //   }
+    // }, [materialDataDict, id, dispatch])
+
+    // const handleMouseMove = useMemo(function () {
+    //     return function () {
+    //         const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
+    //         if (!updatedMaterialData) return;
+    //         // updatedMaterialData.path[1][0] += 0.001;
+    //         // updatedMaterialData.path[2][0] += 0.001;
+    //         const step = -0.001;
+    //         updatedMaterialData.setWidthRatio(updatedMaterialData.getWidthRatio() + step);
+    //         dispatch(updateMaterialData(updatedMaterialData));
+    //     }
+    // }, [materialDataDict, id, dispatch])
 
   return (
     <>
@@ -87,8 +112,8 @@ const Material: React.FC<MaterialProps> = ({id}) => {
         fillPatternImage = {image}
         stroke = {'black'}
         strokeWidth = {MATERIAL_STROKE}
-        onTouchStart={toggleSelectMaterial}
-        onMouseDown={toggleSelectMaterial}
+        onTouchStart={() => {setIsSelected(true)}}
+        onMouseDown={() => {setIsSelected(true)}}
       />
       {materialDataDict[id].getIsSelected() ? 
       <Rect
@@ -100,8 +125,8 @@ const Material: React.FC<MaterialProps> = ({id}) => {
         opacity={0.5}
         stroke = {'red'}
         strokeWidth = {MATERIAL_STROKE}
-        onTouchStart={toggleSelectMaterial}
-        onMouseDown={toggleSelectMaterial}
+        onTouchEnd={handleTouchEnd}
+        onMouseUp={handleTouchEnd}
       />:null}
     </>
     // <Shape

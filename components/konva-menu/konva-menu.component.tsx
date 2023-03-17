@@ -9,6 +9,7 @@ import styles from './konva-menu.module.scss';
 import { addMaterialData } from '@/redux/konva/konva.actions';
 import AddMaterialButton from '../add-material-button/add-material-button.component';
 import DirectionalButton from '../directional-button/directional-button.component';
+import MaterialSizePosMenu from '../material-size-pos-menu/material-size-pos-menu.component';
 
 // type KonvasElementOptionsProps = {
 //     element: JSX.Element | undefined,
@@ -41,7 +42,7 @@ const KonvaMenu: React.FC = () => {
     return (
       <div className={styles.menu}>
         <AddMaterialButton />
-        <DirectionalButton />
+        <MaterialSizePosMenu />
       </div>
       );
   };
