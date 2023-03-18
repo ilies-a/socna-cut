@@ -5,7 +5,6 @@ import { selectIsRecording, selectTouches } from '@/redux/screen-event/screen-ev
 import { KONVA_HEIGHT_SCALE, KONVA_WIDTH_SCALE, MaterialData } from '@/global';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
 import { selectMaterialDataDict } from '@/redux/konva/konva.selectors';
-import Draggable from 'react-draggable';
 import { setIsRecording } from '@/redux/screen-event/screen-event.actions';
 
 const DirectionalButton: React.FC = () => {

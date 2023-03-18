@@ -2,12 +2,12 @@ import { MutableRefObject, TouchEventHandler, useEffect, useMemo, useRef, useSta
 import styles from './material-size-pos-menu.module.scss'
 import { useDispatch, useSelector } from 'react-redux';
 import { selectIsRecording, selectTouches } from '@/redux/screen-event/screen-event.selectors';
-import { KONVA_HEIGHT_SCALE, KONVA_WIDTH_SCALE, MaterialData, getSelectedMaterialDataList } from '@/global';
+import { KONVA_HEIGHT_SCALE, KONVA_WIDTH_SCALE, MaterialData, getMaterialDataArray, getSelectedMaterialDataArray } from '@/global';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
 import { selectMaterialDataDict } from '@/redux/konva/konva.selectors';
-import Draggable from 'react-draggable';
 import { setIsRecording } from '@/redux/screen-event/screen-event.actions';
 import DirectionalButton from '../directional-button/directional-button.component';
+// import DoubleRangeSlider from '../double-range-slider/double-range-slider.component';
 
 const MaterialSizePosMenu: React.FC = () => {
     // const [directionButtonInitialPos, setDirectionButtonInitialPos] = useState<[number, number]>([0, 0]);
@@ -24,7 +24,7 @@ const MaterialSizePosMenu: React.FC = () => {
     const maxWidth = "100";
 
     const minHeight = "1";
-    const maxHeight = "50";
+    const maxHeight = "200";
 
     // const [draggable, setDraggable ] = useState<boolean>(true);
 
@@ -187,11 +187,10 @@ const MaterialSizePosMenu: React.FC = () => {
     // }
 
 
-
     const handleMaterialWidthInputOnChange = useMemo(function () {
         return function (e:React.FormEvent<HTMLInputElement>) {
             const setSelectedMaterialsWidthRatio = (widthRatio: number) => {
-                const selectedMaterialDataList = getSelectedMaterialDataList(materialDataDict);
+                const selectedMaterialDataList = getSelectedMaterialDataArray(materialDataDict);
                 for(let i=0; i<selectedMaterialDataList.length; i++){
                     selectedMaterialDataList[i].setWidthRatio(widthRatio);
                     dispatch(updateMaterialData(selectedMaterialDataList[i]));
@@ -226,11 +225,81 @@ const MaterialSizePosMenu: React.FC = () => {
 
     const handleMaterialHeightInputOnChange = useMemo(function () {
         return function (e:React.FormEvent<HTMLInputElement>) {
+                const updateMaterialsAfterMaterialResizing = () => {
+                    const sortMaterialDataArrayByY = () => {
+                        return getMaterialDataArray(materialDataDict).sort((a, b) => a.getY() - b.getY());
+                    }
+                    const sortedMaterialDataArr = sortMaterialDataArrayByY();
+                    for(let i=0; i<sortedMaterialDataArr.length-1; i++){
+                        const currentMaterialData = sortedMaterialDataArr[i];
+                        const nextMaterialData = sortedMaterialDataArr[i+1];
+                        const dy = nextMaterialData.getY() - (currentMaterialData.getY() + currentMaterialData.getHeight());
+                        nextMaterialData.setY(nextMaterialData.getY() - dy);
+                        dispatch(updateMaterialData(nextMaterialData));
+                    }
+                    
+                    // for(const v = thereisvoidbetween(); !v;){
+
+                    // }
+
+                    // for(const id1 in  materialDataDict){
+                    //     const id1Bottom = materialDataDict[id1].getY() + materialDataDict[id1].getHeight();
+                    //     const nextPointBelowBottom = id1Bottom + 1;
+                    //     const distances: [MaterialData,number][] = [];
+                    //     for(const id2 in  materialDataDict){
+                    //         //we ignore the same element
+                    //         if(id1 === id2 ) continue;
+                    //         //check if next point below bottom of materialDataDict[id1] is between materialDataDict[id2].y and materialDataDict[id2].y + materialDataDict[id2].height if not it is void
+                    //         if(nextPointBelowBottom < materialDataDict[id2].getY()) continue;
+                    //         //there is void
+                    //         distances.push([materialDataDict[id2], materialDataDict[id2].getY() - id1Bottom])
+                    //     }
+                    //     //determine what is the material below void
+                    //     const materialBelowVoid = distances.filter((value) => value[1] === Math.min(...distances.map((val)=> val[1])))[0][0];
+                    //     materialBelowVoid.setY(id1Bottom);    
+                    // }
+                    // return;
+                }
+                const updateMaterialsAfterBottomChange = (changedMaterial:MaterialData, shift:number) => {
+                if(shift<=0) return //testing
+
+                //finding materials having their top lower than resizingMaterialId's top
+
+                for(const id in  materialDataDict){
+                    if(id === changedMaterial.getId()) continue;
+                    if(changedMaterial.getY() < materialDataDict[id].getY() && 
+                        changedMaterial.getY() + changedMaterial.getHeight() > materialDataDict[id].getY()){
+                        materialDataDict[id].setY(materialDataDict[id].getY() + shift);
+                        dispatch(updateMaterialData(materialDataDict[id]));
+                        updateMaterialsAfterBottomChange(materialDataDict[id], shift);
+                    }
+                }
+                return;
+            // const updateOtherMaterialsAfterVericalMaterialResizing = (resizingMaterialId:string, resizingMaterialBottomBeforeResizing:number, shift:number) => {
+            //     if(shift<=0) return //testing
+
+            //     //finding materials having their top touching resizing material's bottom
+            //     //const materialsBelow:{[key: string]: MaterialData;} =  {};
+
+            //     for(const id in  materialDataDict){
+            //         if(id === resizingMaterialId) continue;
+            //         if(resizingMaterialBottomBeforeResizing === materialDataDict[id].getY()){
+            //             //this material had its top touching resizing material's bottom
+            //             materialDataDict[id].setY(materialDataDict[id].getY() + shift);
+            //             dispatch(updateMaterialData(materialDataDict[id]));
+            //         }
+            //     }
+            //     return;
+            }
+
             const setSelectedMaterialsHeight = (height: number) => {
-                const selectedMaterialDataList = getSelectedMaterialDataList(materialDataDict);
+                const selectedMaterialDataList = getSelectedMaterialDataArray(materialDataDict);
                 for(let i=0; i<selectedMaterialDataList.length; i++){
+                    const heightDifference = height - selectedMaterialDataList[i].getHeight();
                     selectedMaterialDataList[i].setHeight(height);
                     dispatch(updateMaterialData(selectedMaterialDataList[i]));
+                    updateMaterialsAfterBottomChange(selectedMaterialDataList[i], heightDifference);
+                    updateMaterialsAfterMaterialResizing();
                 }
                 return;
             }
@@ -259,12 +328,29 @@ const MaterialSizePosMenu: React.FC = () => {
         }
       }, [dispatch, materialDataDict]);
       
+
     return (
         <div className={`${styles['main-wrapper']}`} style={{"left":""+ directionalButtonPos[0] +"px", "top":""+ directionalButtonPos[1] +"px"}}>
             <DirectionalButton/>
             <div className={`${styles['material-size-input-wrappers']}`}>
                 <div className={`${styles['material-size-input-wrapper']} ${styles['material-width-input-wrapper']}`}>
+                    {/* <DoubleRangeSlider/> */}
                     <input className={`${styles['material-size-range-input']} ${styles['material-width-range-input']}`} name="material-width-range-input" type="range" min={minWidth} max={maxWidth} value={materialWidthInputVal} onChange={handleMaterialWidthInputOnChange} />
+
+                    {/* <MultiRangeSlider
+                    minValue={-100}
+                    maxValue={100}
+                    step={10}
+                    stepOnly
+                    onInput={(e) => {
+                        // setMinValue(e.minValue);
+                        // setMaxValue(e.maxValue);
+                    }}
+                    style={{"border": 'none', "boxShadow": 'none', "padding": '15px 10px'}}
+                    label='false'
+                    ruler='false'
+                    /> */}
+                    
                     <input className={`${styles['material-size-number-input']} ${styles['material-width-number-input']}`} name="material-width-input" type="number" value={materialWidthInputVal} onChange={handleMaterialWidthInputOnChange} />
                     <span className={`${styles['size-unit']}`}>%</span>
                 </div>

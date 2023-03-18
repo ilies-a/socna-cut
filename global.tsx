@@ -45,6 +45,14 @@ export class MaterialData {
     return this.isSelected
   }
 
+  setX(newX: number){
+    this.x = newX;
+  }
+
+  setY(newY: number){
+    this.y = newY;
+  }
+
   setWidthRatio(newWidthRatio: number){
     this.widthRatio = newWidthRatio;
   }
@@ -63,6 +71,10 @@ export class MaterialData {
   // }
 }
 
-export const getSelectedMaterialDataList = ( materialDataDict: { [key: string]: MaterialData }): MaterialData[] => {
+export const getSelectedMaterialDataArray = ( materialDataDict: { [key: string]: MaterialData }): MaterialData[] => {
   return Object.keys(materialDataDict).map(key => materialDataDict[key]).filter(materialData => materialData.getIsSelected());
+}
+
+export const getMaterialDataArray = ( materialDataDict: { [key: string]: MaterialData }): MaterialData[] => {
+  return Object.keys(materialDataDict).map(key => materialDataDict[key]);
 }
