@@ -200,7 +200,7 @@ const MaterialSizePosMenu: React.FC = () => {
 
             let inputValueFloat: number = parseFloat(e.currentTarget.value);
             if(!inputValueFloat) {
-                setMaterialWidthInputVal(minWidth);
+                setMaterialWidthInputVal("");
                 setSelectedMaterialsWidthRatio(parseFloat(minWidth) / 100);
                 return;
             };
@@ -225,88 +225,213 @@ const MaterialSizePosMenu: React.FC = () => {
 
     const handleMaterialHeightInputOnChange = useMemo(function () {
         return function (e:React.FormEvent<HTMLInputElement>) {
-                const updateMaterialsAfterMaterialResizing = () => {
-                    const sortMaterialDataArrayByY = () => {
-                        return getMaterialDataArray(materialDataDict).sort((a, b) => a.getY() - b.getY());
-                    }
-                    const sortedMaterialDataArr = sortMaterialDataArrayByY();
-                    for(let i=0; i<sortedMaterialDataArr.length-1; i++){
-                        const currentMaterialData = sortedMaterialDataArr[i];
-                        const nextMaterialData = sortedMaterialDataArr[i+1];
-                        const dy = nextMaterialData.getY() - (currentMaterialData.getY() + currentMaterialData.getHeight());
-                        nextMaterialData.setY(nextMaterialData.getY() - dy);
-                        dispatch(updateMaterialData(nextMaterialData));
-                    }
+                const sortMaterialDataArrayByY = () => {
+                    return getMaterialDataArray(materialDataDict).sort((a, b) => a.getY() - b.getY());
+                }
+                const sortMaterialDataArrayByYDesc = () => {
+                    return getMaterialDataArray(materialDataDict).sort((a, b) => b.getY() - a.getY());
+                }
+                // const pushUpMaterialsToRemoveVoidBetweenMaterials = (materialData:MaterialData, sortedMaterialDataArrayByY:MaterialData[]) => {               
+                //     //we check if materialData has a material above him if not move it to the top
+                //     const materialDataIndex = sortedMaterialDataArrayByY.findIndex(materialDataArg => materialDataArg.getId() === materialData.getId());
+                //     const upperMaterialArr = sortedMaterialDataArrayByY.slice(0, materialDataIndex);
+
+                //     let collisionIfMovedUp = false;
+                //     for(const materialDataArg of upperMaterialArr){
+                //         collisionIfMovedUp = !(materialData.getXRatio() + materialData.getWidthRatio()  < materialDataArg.getXRatio() ||
+                //         materialData.getXRatio() > materialDataArg.getXRatio() + materialDataArg.getWidthRatio())
+                //         // alert("materialData.getId(): " + materialData.getId() + ", collisionIfMovedUp: "+collisionIfMovedUp);
+                //         if(collisionIfMovedUp) break;
+                //     }
+                //     alert(materialData.getId()+" hey ")
+
+                //     if(materialData.getY() && !collisionIfMovedUp){
+                //         // alert(materialData.getId())
+                //         materialData.setY(0);
+                //         dispatch(updateMaterialData(materialData));
+                //     }
+
+                //     const lowerMaterialArr = sortedMaterialDataArrayByY.slice(materialDataIndex+1);
+                //     const materialDataBottom = materialData.getY() + materialData.getHeight();
+                //     const nextCollidedLowerMaterial = lowerMaterialArr.find(materialDataArg => 
+                //         materialDataBottom <= materialDataArg.getY() && !(materialData.getXRatio() + materialData.getWidthRatio()  < materialDataArg.getXRatio() ||
+                //         materialData.getXRatio() > materialDataArg.getXRatio() + materialDataArg.getWidthRatio())                    
+                //     )
+                //     if(!nextCollidedLowerMaterial) return;
+
+                //     nextCollidedLowerMaterial.setY(materialDataBottom);
+                //     dispatch(updateMaterialData(nextCollidedLowerMaterial));
+                //     pushUpMaterialsToRemoveVoidBetweenMaterials(nextCollidedLowerMaterial, sortedMaterialDataArrayByY);
+                // }
+
+                // const pushUpMaterialsToRemoveVoidBetweenMaterials = (passedSortedMaterialDataArrayByY:MaterialData[], remainingSortedMaterialDataArrayByY:MaterialData[], first:boolean) => {               
+                //     //we check if materialData has a material above him if not move it to the top
+                //     // const materialDataIndex = sortedMaterialDataArrayByY.findIndex(materialDataArg => materialDataArg.getId() === materialData.getId());
+                //     // const upperMaterialArr = sortedMaterialDataArrayByY.slice(0, materialDataIndex);
+
+                //     // let collisionIfMovedUp = false;
+                //     // for(const materialDataArg of upperMaterialArr){
+                //     //     collisionIfMovedUp = !(materialData.getXRatio() + materialData.getWidthRatio()  < materialDataArg.getXRatio() ||
+                //     //     materialData.getXRatio() > materialDataArg.getXRatio() + materialDataArg.getWidthRatio())
+                //     //     // alert("materialData.getId(): " + materialData.getId() + ", collisionIfMovedUp: "+collisionIfMovedUp);
+                //     //     if(collisionIfMovedUp) break;
+                //     // }
+                //     // alert(materialData.getId()+" hey ")
+
+                //     // if(materialData.getY() && !collisionIfMovedUp){
+                //     //     // alert(materialData.getId())
+                //     //     materialData.setY(0);
+                //     //     dispatch(updateMaterialData(materialData));
+                //     // }
+
+                //     const materialData = remainingSortedMaterialDataArrayByY.shift() as MaterialData;
+
+                //     //if no collidable material above, move it to the top
+                //     let collidableMaterialAbove = false;
+                //     for(const materialDataArg of passedSortedMaterialDataArrayByY){
+                //         collidableMaterialAbove = !(materialData.getXRatio() + materialData.getWidthRatio()  < materialDataArg.getXRatio() ||
+                //         materialData.getXRatio() > materialDataArg.getXRatio() + materialDataArg.getWidthRatio())
+                //         // alert("materialData.getId(): " + materialData.getId() + ", collisionIfMovedUp: "+collisionIfMovedUp);
+                //         if(collidableMaterialAbove) break;
+                //     }
+                //     if(materialData.getY() && !collidableMaterialAbove){
+                //         // alert(materialData.getId())
+                //         materialData.setY(0);
+                //         dispatch(updateMaterialData(materialData));
+                //     }
+
+                //     const materialDataBottom = materialData.getY() + materialData.getHeight();
+                //     const nextCollidedLowerMaterial = remainingSortedMaterialDataArrayByY.find(materialDataArg => 
+                //         materialDataBottom <= materialDataArg.getY() && !(materialData.getXRatio() + materialData.getWidthRatio()  < materialDataArg.getXRatio() ||
+                //         materialData.getXRatio() > materialDataArg.getXRatio() + materialDataArg.getWidthRatio())                    
+                //     )
+                //     if(nextCollidedLowerMaterial){
+                //         nextCollidedLowerMaterial.setY(materialDataBottom);
+                //         dispatch(updateMaterialData(nextCollidedLowerMaterial));
+                //     }
+
+                //     if(remainingSortedMaterialDataArrayByY.length === 1) return;
+
+                //     passedSortedMaterialDataArrayByY.push(materialData);
+                //     pushUpMaterialsToRemoveVoidBetweenMaterials(passedSortedMaterialDataArrayByY, remainingSortedMaterialDataArrayByY, false);
+                // }
+
+                const pushUpMaterialsToRemoveVoidBetweenMaterials = (remainSortedMaterialDataArrayByYDesc:MaterialData[], materialLinksDict:{ [key: string]: MaterialData[] }) => {               
+                    //pseudo code
+                    //a material can be linked to the floor (top 0) or a material
+                    //we start from the bottom
+
+                    //create a materialLinksDict like id: {materialData:MaterialData, linkedMaterialDataArray:MaterialData[]}
+                    //while(oneMaterialIsStillNotChained){
+                        //checkColision between lower materialData (sortedMaterialDataArrayByYDesc[0])
+
+                    //}
+
+                    //check colision between lower materialData (remainSortedMaterialDataArrayByYDesc[0]) and material above.
+                    //if no collision link material to the floor (top 0)
+                    //if collision link material to collided material
+
+                    //move up material to the bottom of collided material
+                    //move up linked material of this material by the distance of the previous move
+                    //pop this material from remainSortedMaterialDataArrayByYDesc
+
+                    //pass remainSortedMaterialDataArrayByYDesc and materialLinksDict to pushUpMaterialsToRemoveVoidBetweenMaterials
+
+  
+                    const lowestMaterialData = remainSortedMaterialDataArrayByYDesc.shift() as MaterialData;
                     
-                    // for(const v = thereisvoidbetween(); !v;){
+                    let collidableMaterialAbove = (() => {
+                        for(const upperMaterialData of remainSortedMaterialDataArrayByYDesc){
+                            if (!(lowestMaterialData.getXRatio() + lowestMaterialData.getWidthRatio()  < upperMaterialData.getXRatio() ||
+                            lowestMaterialData.getXRatio() > upperMaterialData.getXRatio() + upperMaterialData.getWidthRatio())){
+                                return upperMaterialData;
+                            }
+                        }
+                        return null;
+                    })();
 
-                    // }
-
-                    // for(const id1 in  materialDataDict){
-                    //     const id1Bottom = materialDataDict[id1].getY() + materialDataDict[id1].getHeight();
-                    //     const nextPointBelowBottom = id1Bottom + 1;
-                    //     const distances: [MaterialData,number][] = [];
-                    //     for(const id2 in  materialDataDict){
-                    //         //we ignore the same element
-                    //         if(id1 === id2 ) continue;
-                    //         //check if next point below bottom of materialDataDict[id1] is between materialDataDict[id2].y and materialDataDict[id2].y + materialDataDict[id2].height if not it is void
-                    //         if(nextPointBelowBottom < materialDataDict[id2].getY()) continue;
-                    //         //there is void
-                    //         distances.push([materialDataDict[id2], materialDataDict[id2].getY() - id1Bottom])
-                    //     }
-                    //     //determine what is the material below void
-                    //     const materialBelowVoid = distances.filter((value) => value[1] === Math.min(...distances.map((val)=> val[1])))[0][0];
-                    //     materialBelowVoid.setY(id1Bottom);    
-                    // }
-                    // return;
-                }
-                const updateMaterialsAfterBottomChange = (changedMaterial:MaterialData, shift:number) => {
-                if(shift<=0) return //testing
-
-                //finding materials having their top lower than resizingMaterialId's top
-
-                for(const id in  materialDataDict){
-                    if(id === changedMaterial.getId()) continue;
-                    if(changedMaterial.getY() < materialDataDict[id].getY() && 
-                        changedMaterial.getY() + changedMaterial.getHeight() > materialDataDict[id].getY()){
-                        materialDataDict[id].setY(materialDataDict[id].getY() + shift);
-                        dispatch(updateMaterialData(materialDataDict[id]));
-                        updateMaterialsAfterBottomChange(materialDataDict[id], shift);
+                    let previousLowestMaterialDataY = lowestMaterialData.getY();
+                    if(collidableMaterialAbove){
+                        // alert("collidableMaterialAbove "+ collidableMaterialAbove.getId())
+                        materialLinksDict[collidableMaterialAbove.getId()].push(lowestMaterialData);
+                        lowestMaterialData.setY(collidableMaterialAbove.getY() + collidableMaterialAbove.getHeight());
+                    }else{
+                        lowestMaterialData.setY(0);
                     }
+                    dispatch(updateMaterialData(lowestMaterialData));
+
+
+                    const updateLinkedMaterials = (materialDataId:string, dy:number) => {
+                        // alert("Object.keys(materialLinksDict)"+ Object.keys(materialLinksDict))
+
+                        // alert("---> materialDataId:"+materialDataId)
+                        // alert("materialLinksDict[materialDataId].length = "+materialLinksDict[materialDataId].length)
+                        for(const linkedMaterial of materialLinksDict[materialDataId]){
+                            // alert("linkedMaterialId "+ linkedMaterialId)
+                            // alert("linkedMaterialId = "+ linkedMaterial.getId()+ ", linkedMaterial top = "+linkedMaterial.getY());
+                            linkedMaterial.setY(linkedMaterial.getY() - dy);
+                            dispatch(updateMaterialData(linkedMaterial));
+                            updateLinkedMaterials(linkedMaterial.getId(), dy);
+                        }
+                    }
+                    // alert("lowestMaterialData "+lowestMaterialData.getId())
+
+                    updateLinkedMaterials(lowestMaterialData.getId(), lowestMaterialData.getY() - previousLowestMaterialDataY);
+
+                    if(!remainSortedMaterialDataArrayByYDesc.length) return;
+                    pushUpMaterialsToRemoveVoidBetweenMaterials(remainSortedMaterialDataArrayByYDesc, materialLinksDict)
                 }
-                return;
-            // const updateOtherMaterialsAfterVericalMaterialResizing = (resizingMaterialId:string, resizingMaterialBottomBeforeResizing:number, shift:number) => {
-            //     if(shift<=0) return //testing
 
-            //     //finding materials having their top touching resizing material's bottom
-            //     //const materialsBelow:{[key: string]: MaterialData;} =  {};
+                const pushDownMaterialsAfterUpperMaterialBottomChange = (changedMaterial:MaterialData, firstMaterialInitiatingPush:MaterialData, sortedMaterialDataArrayByY:MaterialData[]) => {
+                    const changedMaterialIndex = sortedMaterialDataArrayByY.findIndex(materialData => materialData.getId() === changedMaterial.getId());
+                    const lowerMaterialArr = sortedMaterialDataArrayByY.slice(changedMaterialIndex+1);
+                    const changedMaterialBottom = changedMaterial.getY() + changedMaterial.getHeight();
+                    const nextCollidedLowerMaterial = lowerMaterialArr.find(materialData => 
+                        changedMaterialBottom > materialData.getY() && !(changedMaterial.getXRatio() + changedMaterial.getWidthRatio()  < materialData.getXRatio() ||
+                        changedMaterial.getXRatio() > materialData.getXRatio() + materialData.getWidthRatio())                    
+                    )
+                    if(!nextCollidedLowerMaterial){
+                        //finished, we update materialDataDict, we remove voids between materials and return
+                        // pushUpMaterialsToRemoveVoidBetweenMaterials([], sortedMaterialDataArrayByY, true);
+                        const sortedMaterialDataArrayByYDesc = sortMaterialDataArrayByYDesc();
 
-            //     for(const id in  materialDataDict){
-            //         if(id === resizingMaterialId) continue;
-            //         if(resizingMaterialBottomBeforeResizing === materialDataDict[id].getY()){
-            //             //this material had its top touching resizing material's bottom
-            //             materialDataDict[id].setY(materialDataDict[id].getY() + shift);
-            //             dispatch(updateMaterialData(materialDataDict[id]));
-            //         }
-            //     }
-            //     return;
-            }
+                        const materialLinksDict:{ [key: string]: MaterialData[]; } = {};                   
+                        for(const materialData of sortedMaterialDataArrayByYDesc){
+                            materialLinksDict[materialData.getId()] = [];
+                        }
+                        // // alert("ok --> "+materialLinksDict[sortedMaterialDataArrayByYDesc[0].getId()])
+                        // for(const linkedMaterialId in materialLinksDict[sortedMaterialDataArrayByYDesc[0].getId()]){
+                        //     // alert("linkedMaterialId "+ linkedMaterialId)
+                        //     alert("yoo")
+                        //     const linkedMaterial = materialLinksDict[sortedMaterialDataArrayByYDesc[0].getId()][linkedMaterialId];
+                        //     alert("yeah linkedMaterialId = "+ linkedMaterialId+ ", linkedMaterial top = "+linkedMaterial.getY());
+         
+                        // }
+                        pushUpMaterialsToRemoveVoidBetweenMaterials(sortedMaterialDataArrayByYDesc, materialLinksDict)
+                        return;
+                    }
+                    nextCollidedLowerMaterial.setY(changedMaterialBottom);
+                    dispatch(updateMaterialData(nextCollidedLowerMaterial));
+                    pushDownMaterialsAfterUpperMaterialBottomChange(nextCollidedLowerMaterial, firstMaterialInitiatingPush, sortedMaterialDataArrayByY);
+
+                }
+
 
             const setSelectedMaterialsHeight = (height: number) => {
                 const selectedMaterialDataList = getSelectedMaterialDataArray(materialDataDict);
                 for(let i=0; i<selectedMaterialDataList.length; i++){
-                    const heightDifference = height - selectedMaterialDataList[i].getHeight();
                     selectedMaterialDataList[i].setHeight(height);
                     dispatch(updateMaterialData(selectedMaterialDataList[i]));
-                    updateMaterialsAfterBottomChange(selectedMaterialDataList[i], heightDifference);
-                    updateMaterialsAfterMaterialResizing();
+                    pushDownMaterialsAfterUpperMaterialBottomChange(selectedMaterialDataList[i], selectedMaterialDataList[i], sortMaterialDataArrayByY());
+                    // pushUpMaterialsToRemoveVoidBetweenMaterials();
+                    // pushUpMaterialsToRemoveVoidBetweenMaterials(sortedMaterialDataArrayByY()[0], [], sortedMaterialDataArrayByY());
                 }
                 return;
             }
 
             let inputValueFloat: number = parseFloat(e.currentTarget.value);
             if(!inputValueFloat) {
-                setMaterialHeightInputVal(minHeight);
+                setMaterialHeightInputVal("");
                 setSelectedMaterialsHeight(parseFloat(minHeight));
                 return;
             };
@@ -329,13 +454,43 @@ const MaterialSizePosMenu: React.FC = () => {
       }, [dispatch, materialDataDict]);
       
 
+    const handleOnBlur = (e:React.FormEvent<HTMLInputElement>) => {
+        let inputValueFloat: number = parseFloat(e.currentTarget.value);
+        if(!inputValueFloat) {
+            switch(e.currentTarget.name){
+                case("material-width-number-input"):
+                    setMaterialWidthInputVal(minWidth);
+                    break;
+                default:
+                    setMaterialHeightInputVal(minHeight);
+                    break;
+            }
+            // setMaterialHeightInputVal(minHeight);
+            // setSelectedMaterialsHeight(parseFloat(minHeight));
+            return;
+        };
+    }
+
+
+    const stopEventPropagation = useMemo(function () {
+        return function (e:React.TouchEvent<HTMLDivElement>) {
+          e.stopPropagation();
+        }
+       }, []);
+
     return (
-        <div className={`${styles['main-wrapper']}`} style={{"left":""+ directionalButtonPos[0] +"px", "top":""+ directionalButtonPos[1] +"px"}}>
+        <div className={`${styles['main-wrapper']}`} style={{"left":""+ directionalButtonPos[0] +"px", "top":""+ directionalButtonPos[1] +"px"}} onTouchEnd={stopEventPropagation}>
             <DirectionalButton/>
             <div className={`${styles['material-size-input-wrappers']}`}>
                 <div className={`${styles['material-size-input-wrapper']} ${styles['material-width-input-wrapper']}`}>
                     {/* <DoubleRangeSlider/> */}
-                    <input className={`${styles['material-size-range-input']} ${styles['material-width-range-input']}`} name="material-width-range-input" type="range" min={minWidth} max={maxWidth} value={materialWidthInputVal} onChange={handleMaterialWidthInputOnChange} />
+                    <input className={`${styles['material-size-range-input']} ${styles['material-width-range-input']}`} 
+                        name="material-width-range-input" 
+                        type="range" 
+                        min={minWidth} 
+                        max={maxWidth} 
+                        value={materialWidthInputVal ? materialWidthInputVal : 0} 
+                        onChange={handleMaterialWidthInputOnChange} />
 
                     {/* <MultiRangeSlider
                     minValue={-100}
@@ -350,14 +505,31 @@ const MaterialSizePosMenu: React.FC = () => {
                     label='false'
                     ruler='false'
                     /> */}
-                    
-                    <input className={`${styles['material-size-number-input']} ${styles['material-width-number-input']}`} name="material-width-input" type="number" value={materialWidthInputVal} onChange={handleMaterialWidthInputOnChange} />
+                    <span>w</span>
+                    <input className={`${styles['material-size-number-input']} 
+                        ${styles['material-width-number-input']}`} 
+                        name="material-width-number-input" type="number" 
+                        value={materialWidthInputVal} 
+                        onChange={handleMaterialWidthInputOnChange}
+                        onBlur={handleOnBlur}/>
                     <span className={`${styles['size-unit']}`}>%</span>
                 </div>
                 <div className={`${styles['material-size-input-wrapper']} ${styles['material-height-input-wrapper']}`}>
-                    <input className={`${styles['material-size-number-input']} ${styles['material-height-number-input']}`} name="material-height-input" type="number" value={materialHeightInputVal} onChange={handleMaterialHeightInputOnChange}/>
+                    <span>h</span>
+                    <input className={`${styles['material-size-number-input']} ${styles['material-height-number-input']}`}
+                        name="material-height-number-input" 
+                        type="number" 
+                        value={materialHeightInputVal} 
+                        onChange={handleMaterialHeightInputOnChange}
+                        onBlur={handleOnBlur}/>
                     <span className={`${styles['size-unit']}`}>px</span>
-                    <input className={`${styles['material-size-range-input']} ${styles['material-height-range-input']}`} name="material-height-range-input" type="range" min={minHeight} max={maxHeight} value={materialHeightInputVal} onChange={handleMaterialHeightInputOnChange} />
+                    <input className={`${styles['material-size-range-input']} ${styles['material-height-range-input']}`} 
+                        name="material-height-range-input" 
+                        type="range" 
+                        min={minHeight} 
+                        max={maxHeight} 
+                        value={materialHeightInputVal? materialHeightInputVal : 0} 
+                        onChange={handleMaterialHeightInputOnChange} />
                 </div>
             </div>
         </div>

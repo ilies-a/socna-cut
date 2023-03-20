@@ -41,36 +41,36 @@ const StaticKonvaWrapper: React.FC = () => {
 
     return (
         <PreloadWrapper>
-        <Stage width={window.innerWidth * KONVA_WIDTH_SCALE} height={window.innerHeight * KONVA_HEIGHT_SCALE}>
-        <Layer>
-          {
-            Object.entries(materialDataDict).map(([_, value]) =>{
-              return <Material key={value.getId()} id={value.getId()}/>
-            })
-          }
-          {/* <Rect
-            x={20}
-            y={50}
-            width={100}
-            height={100}
-            fillPatternImage= { image }
-            shadowBlur={10}
-          />
-          <Circle x={200} y={100} radius={50} fill="green" />
-          <Line
-            x={20}
-            y={200}
-            points={[0, 0, 100, 0, 100, 100]}
-            tension={0.5}
-            closed
-            stroke="black"
-            fillLinearGradientStartPoint={{ x: -50, y: -50 }}
-            fillLinearGradientEndPoint={{ x: 50, y: 50 }}
-            fillLinearGradientColorStops={[0, 'red', 1, 'yellow']}
-          /> */}
-        </Layer>
-      </Stage>
-      <KonvaMenu/>
+          <Stage width={window.innerWidth * KONVA_WIDTH_SCALE} height={window.innerHeight * KONVA_HEIGHT_SCALE} style={{"backgroundColor": "grey"}}>
+          <Layer>
+            {
+              Object.entries(materialDataDict).map(([_, value]) =>{
+                return <Material key={value.getId()} id={value.getId()}/>
+              })
+            }
+            {/* <Rect
+              x={20}
+              y={50}
+              width={100}
+              height={100}
+              fillPatternImage= { image }
+              shadowBlur={10}
+            />
+            <Circle x={200} y={100} radius={50} fill="green" />
+            <Line
+              x={20}
+              y={200}
+              points={[0, 0, 100, 0, 100, 100]}
+              tension={0.5}
+              closed
+              stroke="black"
+              fillLinearGradientStartPoint={{ x: -50, y: -50 }}
+              fillLinearGradientEndPoint={{ x: 50, y: 50 }}
+              fillLinearGradientColorStops={[0, 'red', 1, 'yellow']}
+            /> */}
+          </Layer>
+        </Stage>
+        <KonvaMenu/>
       </PreloadWrapper>
       );
   };

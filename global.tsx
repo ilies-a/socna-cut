@@ -6,17 +6,17 @@ export const MATERIAL_STROKE = 0.2;
 export class MaterialData {
   private id:string;
   private type:string;
-  private x: number;
+  private xRatio: number;
   private y: number;
   private widthRatio: number;
   private height: number = 20;
   // path:[number, number][];
   isSelected:boolean = false;
 
-  constructor(id:string, type:string, x:number, y:number, widthRatio:number){
+  constructor(id:string, type:string, xRatio:number, y:number, widthRatio:number){
     this.id = id;
     this.type = type;
-    this.x = x;
+    this.xRatio = xRatio;
     this.y = y;
     this.widthRatio = widthRatio;
   }
@@ -25,8 +25,8 @@ export class MaterialData {
     return this.id;
   }
 
-  getX(): number{
-    return this.x
+  getXRatio(): number{
+    return this.xRatio
   }
 
   getY(): number{
@@ -45,8 +45,8 @@ export class MaterialData {
     return this.isSelected
   }
 
-  setX(newX: number){
-    this.x = newX;
+  setXRatio(newXRatio: number){
+    this.xRatio = newXRatio;
   }
 
   setY(newY: number){

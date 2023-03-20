@@ -7,27 +7,32 @@ import { addMaterialData } from '@/redux/konva/konva.actions';
 import { v4 } from 'uuid';
 
 const AddMaterialButton: React.FC = () => {
-    const materialDataDict:Map<string, MaterialData> = useSelector(selectMaterialDataDict);
+    const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
     const dispatch = useDispatch();
 
     const addMaterialDataMemo= useMemo(function () {
 
       // The next material appears below the lowest material
-      const lowestMaterialBottom = () => {
-        let lowestMaterial: MaterialData | undefined;
-        Object.entries(materialDataDict).map(([_, value]) =>{
-            if(!lowestMaterial){ //first iteration
-              lowestMaterial = value;
-            }
-            else if (lowestMaterial.getY() + lowestMaterial.getHeight() < value.getY() + value.getHeight() ) {
-              lowestMaterial = value;
-            }
-          });
-        if(lowestMaterial){
-          return lowestMaterial.getY() + lowestMaterial.getHeight();
-        }
-        return 0;
-      }
+      // const lowestMaterialBottom = () => {
+      //   let lowestMaterial: MaterialData | undefined;
+      //   Object.entries(materialDataDict).map(([_, value]) =>{
+      //       if(!lowestMaterial){ //first iteration
+      //         lowestMaterial = value;
+      //       }
+      //       else if (lowestMaterial.getY() + lowestMaterial.getHeight() < value.getY() + value.getHeight() ) {
+      //         lowestMaterial = value;
+      //       }
+      //     });
+      //   if(lowestMaterial){
+      //     return lowestMaterial.getY() + lowestMaterial.getHeight();
+      //   }
+      //   return 0;
+      // }
+
+
+
+
+  
 
       return function () {
                     // context.moveTo(x, y);
@@ -36,7 +41,11 @@ const AddMaterialButton: React.FC = () => {
             // context.lineTo(x, height);
             // context.lineTo(x, y);
 
-        const newMaterialData = new MaterialData(v4(), "normal", 0, lowestMaterialBottom(), 1);
+        const materialDataArray = Object.keys(materialDataDict).map(key => materialDataDict[key]);
+        const lowestMaterial = materialDataArray.find((materialData) => materialData.getY() + materialData.getHeight() === Math.max(...materialDataArray.map((materialData)=> materialData.getY() + materialData.getHeight())));
+        const lowestMaterialBottom = lowestMaterial? lowestMaterial.getY() + lowestMaterial.getHeight() : 0;
+
+        const newMaterialData = new MaterialData(v4(), "normal", 0, lowestMaterialBottom, 1);
 
         // const newMaterialData = new MaterialData(v4(), "normal", [
         //         [0, 0],
@@ -46,6 +55,12 @@ const AddMaterialButton: React.FC = () => {
         //         [0, 0]
         //     ]);
         dispatch(addMaterialData(newMaterialData));
+
+        //(test) add one material at right
+        // if(materialDataArray.length === 1){
+        //   const newMaterialData = new MaterialData(v4(), "normal", 0.5, 50, 0.2);
+        //   dispatch(addMaterialData(newMaterialData));
+        // }
       }
     }, [materialDataDict, dispatch]);
 

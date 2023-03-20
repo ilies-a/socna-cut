@@ -1,10 +1,11 @@
 import { KONVA_WIDTH_SCALE, MATERIAL_STROKE, MaterialData } from "@/global";
 import { useEffect, useMemo, useState } from "react";
-import { Rect, Shape } from "react-konva";
+import { Group, Rect, Text } from "react-konva";
 import useImage from 'use-image';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectMaterialDataDict } from '../../redux/konva/konva.selectors';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
+import { KonvaEventObject } from "konva/lib/Node";
 
 type MaterialProps = {
     id: string,
@@ -29,6 +30,18 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     // useEffect(()=>{
     //   if(loadStatus === "loaded")alert(loadStatus);
     // },[loadStatus]);
+
+    const materialXFromRatio = (xRatio:number):number => {
+      return xRatio * window.innerWidth * KONVA_WIDTH_SCALE;
+    }
+
+    const xMemo = useMemo(
+      () => {
+        // console.log("widthMemo update", test)
+          return materialXFromRatio(materialDataDict[id].getXRatio());
+      },
+      [materialDataDict, id]
+    );
 
     const materialWidthFromRatio = (widthRatio:number):number => {
         return widthRatio * window.innerWidth * KONVA_WIDTH_SCALE;
@@ -67,19 +80,19 @@ const Material: React.FC<MaterialProps> = ({id}) => {
       }
     }, [materialDataDict, id, dispatch]);
 
-    const handleTouchEnd = useMemo(function () {
-      return function () {
-        if(!unwantedTouchEnd){
-          setUnwantedTouchEnd(true);
-          return;
-        }
-        const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
-        if (!updatedMaterialData) return;
-        updatedMaterialData.setIsSelected(!updatedMaterialData.getIsSelected());
-        dispatch(updateMaterialData(updatedMaterialData));
-        setUnwantedTouchEnd(false);
-      }
-    }, [materialDataDict, id, dispatch, unwantedTouchEnd]);
+    // const handleTouchEnd = useMemo(function () {
+    //   return function () {
+    //     if(!unwantedTouchEnd){
+    //       setUnwantedTouchEnd(true);
+    //       return;
+    //     }
+    //     const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
+    //     if (!updatedMaterialData) return;
+    //     updatedMaterialData.setIsSelected(!updatedMaterialData.getIsSelected());
+    //     dispatch(updateMaterialData(updatedMaterialData));
+    //     setUnwantedTouchEnd(false);
+    //   }
+    // }, [materialDataDict, id, dispatch, unwantedTouchEnd]);
 
     // const toggleSelectMaterial = useMemo(function () {
     //   return function () {
@@ -102,33 +115,50 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     //     }
     // }, [materialDataDict, id, dispatch])
 
+  const selectMaterial = useMemo(function () {
+    return function (e:KonvaEventObject<TouchEvent>) {
+      e.evt.stopPropagation();
+      setIsSelected(true);
+    }
+   }, [setIsSelected]);
+
+  const unselectMaterial = useMemo(function () {
+    return function (e:KonvaEventObject<TouchEvent>) {
+      e.evt.stopPropagation();
+      setIsSelected(false);
+    }
+  }, [setIsSelected]);
+
   return (
-    <>
+    <Group         
+      x = {xMemo}
+      y = {materialDataDict[id].getY()}>
       <Rect
-        x = {materialDataDict[id].getX()}
-        y = {materialDataDict[id].getY()}
         width = {widthMemo}
         height = {materialDataDict[id].getHeight() - MATERIAL_STROKE}
         fillPatternImage = {image}
         stroke = {'black'}
         strokeWidth = {MATERIAL_STROKE}
-        onTouchStart={() => {setIsSelected(true)}}
+        // onTouchStart={() => {setIsSelected(true)}}
+        onTouchEnd={selectMaterial}
         onMouseDown={() => {setIsSelected(true)}}
       />
+       <Text fontSize={12} text={materialDataDict[id].getId()}
+        wrap="char" align="center" />
+
       {materialDataDict[id].getIsSelected() ? 
       <Rect
-        x = {materialDataDict[id].getX()}
-        y = {materialDataDict[id].getY()}
         width = {widthMemo}
         height = {materialDataDict[id].getHeight() - MATERIAL_STROKE}
         fill="red"
         opacity={0.5}
         stroke = {'red'}
         strokeWidth = {MATERIAL_STROKE}
-        onTouchEnd={handleTouchEnd}
-        onMouseUp={handleTouchEnd}
+        // onTouchEnd={handleTouchEnd}
+        onTouchEnd={unselectMaterial}
+        // onMouseUp={handleTouchEnd}
       />:null}
-    </>
+    </Group>
     // <Shape
     //   sceneFunc={(context, shape) => {
     //     context.beginPath();
