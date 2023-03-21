@@ -14,6 +14,7 @@ const ScreenEventWrapper: React.FC<ScreenEventWrapperProps> = ({children}) => {
   
     useEffect(() => {
       dispatch(setScreenSize([window.innerWidth, window.innerHeight]));
+      alert("window.innerHeight"+ window.innerHeight)
     }, [dispatch]);
 
     const handleWindowResize = useCallback(() => {
