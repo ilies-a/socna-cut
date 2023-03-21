@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { selectMaterialDataDict } from '../../redux/konva/konva.selectors';
 import KonvaMenu from '../konva-menu/konva-menu.component';
 import PreloadWrapper from '../preload-wrapper/preload-wrapper.component';
+import { selectScreenSize } from '@/redux/screen-event/screen-event.selectors';
 
 // type KonvasElementOptionsProps = {
 //     element: JSX.Element | undefined,
@@ -38,10 +39,10 @@ import PreloadWrapper from '../preload-wrapper/preload-wrapper.component';
 
 const StaticKonvaWrapper: React.FC = () => {
   const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
-
+  const screenSize: [number, number] = useSelector(selectScreenSize);
     return (
         <PreloadWrapper>
-          <Stage width={window.innerWidth * KONVA_WIDTH_SCALE} height={window.innerHeight * KONVA_HEIGHT_SCALE} style={{"backgroundColor": "grey"}}>
+          <Stage width={screenSize[0] * KONVA_WIDTH_SCALE} height={screenSize[1] * KONVA_HEIGHT_SCALE} style={{"backgroundColor": "grey"}}>
           <Layer>
             {
               Object.entries(materialDataDict).map(([_, value]) =>{
