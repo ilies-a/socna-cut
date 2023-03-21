@@ -7,6 +7,18 @@ import { selectMaterialDataDict } from '../../redux/konva/konva.selectors';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
 import { KonvaEventObject } from "konva/lib/Node";
 
+
+const colorsForTests = [
+  "orange",
+  "green",
+  "blue",
+  "yellow",
+  "purple",
+  "pink",
+  "brown"
+]
+const colorsForTestsDict:{ [key: string]: string } = {};
+
 type MaterialProps = {
     id: string,
   };
@@ -30,6 +42,10 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     // useEffect(()=>{
     //   if(loadStatus === "loaded")alert(loadStatus);
     // },[loadStatus]);
+
+    useEffect(()=>{
+      colorsForTestsDict[id] = colorsForTests.shift() || "grey";
+    },[id]);
 
     const materialXFromRatio = (xRatio:number):number => {
       return xRatio * window.innerWidth * KONVA_WIDTH_SCALE;
@@ -136,14 +152,15 @@ const Material: React.FC<MaterialProps> = ({id}) => {
       <Rect
         width = {widthMemo}
         height = {materialDataDict[id].getHeight() - MATERIAL_STROKE}
-        fillPatternImage = {image}
+        fill= {colorsForTestsDict[id]} //for tests
+        // fillPatternImage = {image}
         stroke = {'black'}
         strokeWidth = {MATERIAL_STROKE}
         // onTouchStart={() => {setIsSelected(true)}}
         onTouchEnd={selectMaterial}
         onMouseDown={() => {setIsSelected(true)}}
       />
-       <Text fontSize={12} text={materialDataDict[id].getId()}
+       <Text fontSize={12} text={materialDataDict[id].getId().slice(0, 3)}
         wrap="char" align="center" />
 
       {materialDataDict[id].getIsSelected() ? 

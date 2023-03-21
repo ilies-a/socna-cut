@@ -64,10 +64,20 @@ const AddMaterialButton: React.FC = () => {
       }
     }, [materialDataDict, dispatch]);
 
+    const addMaterialDataMemoForTests= useMemo(function () {
+      return function () {
+        for(let i= 1; i<5; i++){
+          const newMaterialData = new MaterialData(v4(), "normal", i * 0.1, i*20, 0.3);
+          dispatch(addMaterialData(newMaterialData));
+        }
+        const newMaterialData = new MaterialData(v4(), "normal", 0.1, 4*20, 0.2);
+        dispatch(addMaterialData(newMaterialData));
+      }
+    }, [dispatch]);
 
     return (
       <div className={styles.menu}>
-        <button onClick={addMaterialDataMemo}>Add material</button>
+        <button onClick={addMaterialDataMemoForTests}>Add material</button>
       </div>
       );
   };

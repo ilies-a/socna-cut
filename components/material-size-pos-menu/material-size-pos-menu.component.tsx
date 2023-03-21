@@ -1,7 +1,7 @@
 import { MutableRefObject, TouchEventHandler, useEffect, useMemo, useRef, useState } from 'react';
 import styles from './material-size-pos-menu.module.scss'
 import { useDispatch, useSelector } from 'react-redux';
-import { selectIsRecording, selectTouches } from '@/redux/screen-event/screen-event.selectors';
+import { selectIsRecording, selectScreenSize, selectTouches } from '@/redux/screen-event/screen-event.selectors';
 import { KONVA_HEIGHT_SCALE, KONVA_WIDTH_SCALE, MaterialData, getMaterialDataArray, getSelectedMaterialDataArray } from '@/global';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
 import { selectMaterialDataDict } from '@/redux/konva/konva.selectors';
@@ -14,11 +14,15 @@ const MaterialSizePosMenu: React.FC = () => {
     const [directionalButtonPos, setDirectionalButtonPos] = useState<[number, number]>([10000, 0]);
     const touches:React.TouchList | null = useSelector(selectTouches);
     const dispatch = useDispatch();
+    const screenSize: [number, number] = useSelector(selectScreenSize);
     const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
     // const [draggable, setDraggable] = useState<boolean>(false);
-    const initialPosScreenRatio = [0.5, 0.7];
+    // const initialPosScreenRatio = [0.5, 0.7];
     const [materialWidthInputVal, setMaterialWidthInputVal ] = useState<string>("0");
     const [materialHeightInputVal, setMaterialHeightInputVal ] = useState<string>("0");
+
+    // const [konvaSize, setKonvaSize ] = useState<[number, number]>([0, 0]);
+    // const [konvaPos, setKonvaPos ] = useState<[number, number]>([0, 0]);
 
     const minWidth = "1";
     const maxWidth = "100";
@@ -31,21 +35,16 @@ const MaterialSizePosMenu: React.FC = () => {
     const isRecording: boolean = useSelector(selectIsRecording);
 
     useEffect(()=>{
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        setDirectionalButtonPos([screenWidth * 0.5, screenHeight * 0.6]);
-    }, []);
+        setDirectionalButtonPos([screenSize[0] * 0.5, screenSize[1] * 0.6]);
+        // setKonvaSize([screenWidth * KONVA_WIDTH_SCALE, screenHeight * KONVA_HEIGHT_SCALE]);
+        // setKonvaPos([(screenWidth - konvaSize[0]) * 0.5, (screenHeight - konvaSize[1]) * 0.5]);
+    }, [screenSize]);
 
     useEffect(()=>{
         if(!touches || !isRecording){
-            // setDirectionalButtonPos(directionButtonInitialPos);
             return
         }
-
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-
-        const konvaPos: [number, number] = [(screenWidth - screenWidth * KONVA_WIDTH_SCALE) * 0.5, (screenHeight - screenHeight * KONVA_HEIGHT_SCALE) * 0.5]; //DUMMY VALUES ! CHANGE WITH REAL KONVA POS
+        const konvaPos = [(screenSize[0] - screenSize[0] * KONVA_WIDTH_SCALE) * 0.5, (screenSize[1] - screenSize[1] * KONVA_HEIGHT_SCALE) * 0.5] as [number, number];
         const touchPos = getTouchPos(touches[0], konvaPos);
         setDirectionalButtonPos(touchPos);
 
@@ -64,7 +63,7 @@ const MaterialSizePosMenu: React.FC = () => {
         // }
 
         
-    },[touches, isRecording]);
+    },[touches, isRecording, screenSize]);
 
     const getTouchPos = (touch:React.Touch, konvaPos:[number, number]): [number, number] => {
         const touchX = touch.clientX - konvaPos[0];
@@ -189,14 +188,37 @@ const MaterialSizePosMenu: React.FC = () => {
 
     const handleMaterialWidthInputOnChange = useMemo(function () {
         return function (e:React.FormEvent<HTMLInputElement>) {
+            const sortTowardsMoveDirection = () => {
+                return getMaterialDataArray(materialDataDict).sort((a, b) => a.getXRatio() + a.getWidthRatio() - (b.getXRatio() + b.getWidthRatio()));
+            }
+
+            const pushRightMaterialsAfterLeftMaterialRightChange = (changedMaterial:MaterialData, sortedTowardsMoveDirection:MaterialData[]) => {
+                const changedMaterialIndex = sortedTowardsMoveDirection.findIndex(materialData => materialData.getId() === changedMaterial.getId());
+                const rightMaterialArr = sortedTowardsMoveDirection.slice(changedMaterialIndex+1);
+
+                const nextCollidedRightMaterial = rightMaterialArr.find(materialData =>
+                    changedMaterial.getXRatio() + changedMaterial.getWidthRatio() > materialData.getXRatio() && !(changedMaterial.getY() + changedMaterial.getHeight()  <= materialData.getY() ||
+                    changedMaterial.getY() >= materialData.getY() + materialData.getHeight())                            
+                )
+                if(!nextCollidedRightMaterial){
+                    return;
+                }
+                
+                nextCollidedRightMaterial.setXRatio(changedMaterial.getXRatio() + changedMaterial.getWidthRatio());
+                dispatch(updateMaterialData(nextCollidedRightMaterial));
+                pushRightMaterialsAfterLeftMaterialRightChange(nextCollidedRightMaterial, sortedTowardsMoveDirection);
+            }
+
             const setSelectedMaterialsWidthRatio = (widthRatio: number) => {
                 const selectedMaterialDataList = getSelectedMaterialDataArray(materialDataDict);
                 for(let i=0; i<selectedMaterialDataList.length; i++){
                     selectedMaterialDataList[i].setWidthRatio(widthRatio);
                     dispatch(updateMaterialData(selectedMaterialDataList[i]));
+                    pushRightMaterialsAfterLeftMaterialRightChange(selectedMaterialDataList[i], sortTowardsMoveDirection())
                 }
                 return;
             }
+
 
             let inputValueFloat: number = parseFloat(e.currentTarget.value);
             if(!inputValueFloat) {
@@ -223,9 +245,203 @@ const MaterialSizePosMenu: React.FC = () => {
       }, [dispatch, materialDataDict]);
      
 
+
+    //   const pushUpMaterialsMemoOldVersion = useMemo(function () {
+    //     return function () {
+    //         const sortMaterialDataArrayByY = () => {
+    //             return getMaterialDataArray(materialDataDict).sort((a, b) => a.getY() - b.getY());
+    //         }
+        
+    //         const pushUpMaterials = (sortedMaterialDataArrayByY:MaterialData[], sortedMaterialDataArrayByYDesc:MaterialData[], index:number) => {               
+    //             //pseudo code
+    //             //check for upper material
+    //             //if exists set y to bottom of upper material else to 0 (floor)
+    //             //run same function with shifted remainSortedMaterialDataArrayByY
+    //             const currentMaterial = sortedMaterialDataArrayByY[index] as MaterialData;
+    //             // alert("currentMaterial id= "+currentMaterial.getId()+", sortedMaterialDataArrayByY[0].getId()= "+sortedMaterialDataArrayByY[0].getId()+", index= "+index)
+
+    //             let collidableMaterialAbove = (() => {
+    //                 for(const loopMaterial of sortedMaterialDataArrayByYDesc){
+    //                     if (currentMaterial.getY() >= loopMaterial.getY() + loopMaterial.getHeight() && !(currentMaterial.getXRatio() + currentMaterial.getWidthRatio()  <= loopMaterial.getXRatio() ||
+    //                     currentMaterial.getXRatio() >= loopMaterial.getXRatio() + loopMaterial.getWidthRatio())){
+    //                         return loopMaterial;
+    //                     }
+    //                 }
+    //                 return null;
+    //             })();
+
+    //             if(collidableMaterialAbove){
+    //                 currentMaterial.setY(collidableMaterialAbove.getY() + collidableMaterialAbove.getHeight());
+    //             }else{
+    //                 currentMaterial.setY(0);
+    //             }
+    //             dispatch(updateMaterialData(currentMaterial));
+    //             if(index === sortedMaterialDataArrayByY.length -1) return;
+
+    //             sortedMaterialDataArrayByY.sort((a, b) => a.getY() - b.getY());
+    //             sortedMaterialDataArrayByYDesc.sort((a, b) => b.getY() - a.getY());
+
+    //             pushUpMaterials(sortedMaterialDataArrayByY, sortedMaterialDataArrayByYDesc, index + 1);
+    //         }
+
+    //         const sortedMaterialDataArrayByY = sortMaterialDataArrayByY();
+
+    //         pushUpMaterials(sortedMaterialDataArrayByY, sortedMaterialDataArrayByY.slice().reverse(), 0)
+
+    //     }
+    // }, [materialDataDict, dispatch]);
+
+
+    const pushUpMaterialsMemo = useMemo(function () {
+        return function () {
+            const sortTowardsMoveDirection = () => {
+                return getMaterialDataArray(materialDataDict).sort((a, b) => b.getY() - a.getY());
+            }
+        
+            const pushUpMaterials = (sortedTowardsMoveDirection:MaterialData[], sortedOppositeMoveDirection:MaterialData[], index:number) => {               
+                //pseudo code
+                //check for upper material
+                //if exists set y to bottom of upper material else to 0 (floor)
+                //run same function with shifted remainSortedMaterialDataArrayByY
+                const currentMaterial = sortedOppositeMoveDirection[index] as MaterialData;
+                // alert("currentMaterial id= "+currentMaterial.getId()+", sortedMaterialDataArrayByY[0].getId()= "+sortedMaterialDataArrayByY[0].getId()+", index= "+index)
+
+                let collidableMaterialAbove = (() => {
+                    for(const loopMaterial of sortedTowardsMoveDirection){
+                        if (currentMaterial.getY() >= loopMaterial.getY() + loopMaterial.getHeight() && !(currentMaterial.getXRatio() + currentMaterial.getWidthRatio()  <= loopMaterial.getXRatio() ||
+                        currentMaterial.getXRatio() >= loopMaterial.getXRatio() + loopMaterial.getWidthRatio())){
+                            return loopMaterial;
+                        }
+                    }
+                    return null;
+                })();
+
+                if(collidableMaterialAbove){
+                    currentMaterial.setY(collidableMaterialAbove.getY() + collidableMaterialAbove.getHeight());
+                }else{
+                    currentMaterial.setY(0);
+                }
+                dispatch(updateMaterialData(currentMaterial));
+                if(index === sortedOppositeMoveDirection.length -1) return;
+
+                sortedTowardsMoveDirection.sort((a, b) => b.getY() - a.getY());
+                pushUpMaterials(sortedTowardsMoveDirection, sortedTowardsMoveDirection.slice().reverse(), index + 1);
+            }
+
+
+            const sortedTowardsMoveDirection = sortTowardsMoveDirection();
+            pushUpMaterials(sortedTowardsMoveDirection, sortedTowardsMoveDirection.slice().reverse(), 0)
+
+        }
+    }, [materialDataDict, dispatch]);
+
+    const pushRightMaterialsMemo = useMemo(function () {
+        return function () {
+            const sortTowardsMoveDirection = () => {
+                return getMaterialDataArray(materialDataDict).sort((a, b) => a.getXRatio() + a.getWidthRatio() - (b.getXRatio() + b.getWidthRatio()));
+            }
+        
+            const pushRightMaterials = (sortedTowardsMoveDirection:MaterialData[], sortedOppositeMoveDirection:MaterialData[], index:number) => {               
+                //pseudo code
+                //check for upper material
+                //if exists set y to bottom of upper material else to 0 (floor)
+                //run same function with shifted remainSortedMaterialDataArrayByY
+                const currentMaterial = sortedOppositeMoveDirection[index] as MaterialData;
+                // alert("currentMaterial id= "+currentMaterial.getId()+", sortedMaterialDataArrayByY[0].getId()= "+sortedMaterialDataArrayByY[0].getId()+", index= "+index)
+
+                let collidableMaterialAtRight = (() => {
+                    for(const loopMaterial of sortedTowardsMoveDirection){
+                        if (currentMaterial.getXRatio() + currentMaterial.getWidthRatio() <= loopMaterial.getXRatio() && !(currentMaterial.getY() + currentMaterial.getHeight()  <= loopMaterial.getY() ||
+                        currentMaterial.getY() >= loopMaterial.getY() + loopMaterial.getHeight())){
+                            return loopMaterial;
+                        }
+                    }
+                    return null;
+                })();
+
+                if(collidableMaterialAtRight){
+                    currentMaterial.setXRatio(collidableMaterialAtRight.getXRatio() - currentMaterial.getWidthRatio());
+                }else{
+                    currentMaterial.setXRatio(1 - currentMaterial.getWidthRatio());
+                }
+
+                dispatch(updateMaterialData(currentMaterial));
+                if(index === sortedOppositeMoveDirection.length -1) return;
+
+                sortedTowardsMoveDirection.sort((a, b) => a.getXRatio() + a.getWidthRatio() - (b.getXRatio() + b.getWidthRatio()));
+                pushRightMaterials(sortedTowardsMoveDirection, sortedTowardsMoveDirection.slice().reverse(), index + 1);
+            }
+
+            const sortedTowardsMoveDirection = sortTowardsMoveDirection();
+
+            pushRightMaterials(sortedTowardsMoveDirection, sortedTowardsMoveDirection.slice().reverse(), 0)
+
+        }}, [materialDataDict, dispatch]);
+
+
+    //   const pushUpMaterials = (remainSortedMaterialDataArrayByYDesc:MaterialData[], materialLinksDict:{ [key: string]: MaterialData[] }) => {               
+    //     //pseudo code
+    //     //a material can be linked to the floor (top 0) or a material
+    //     //we start from the bottom
+
+    //     //create a materialLinksDict like id: {materialData:MaterialData, linkedMaterialDataArray:MaterialData[]}
+    //     //while(oneMaterialIsStillNotChained){
+    //         //checkColision between lower materialData (sortedMaterialDataArrayByYDesc[0])
+
+    //     //}
+
+    //     //check colision between lower materialData (remainSortedMaterialDataArrayByYDesc[0]) and material above.
+    //     //if no collision link material to the floor (top 0)
+    //     //if collision link material to collided material
+
+    //     //move up material to the bottom of collided material
+    //     //move up linked material of this material by the distance of the previous move
+    //     //pop this material from remainSortedMaterialDataArrayByYDesc
+
+    //     //pass remainSortedMaterialDataArrayByYDesc and materialLinksDict to pushUpMaterialsToRemoveVoidBetweenMaterials
+
+
+    //     const lowestMaterialData = remainSortedMaterialDataArrayByYDesc.shift() as MaterialData;
+        
+    //     let collidableMaterialAbove = (() => {
+    //         for(const upperMaterialData of remainSortedMaterialDataArrayByYDesc){
+    //             if (!(lowestMaterialData.getXRatio() + lowestMaterialData.getWidthRatio()  < upperMaterialData.getXRatio() ||
+    //             lowestMaterialData.getXRatio() > upperMaterialData.getXRatio() + upperMaterialData.getWidthRatio())){
+    //                 return upperMaterialData;
+    //             }
+    //         }
+    //         return null;
+    //     })();
+
+    //     let lowestMaterialDataYBeforeUpdate = lowestMaterialData.getY();
+    //     if(collidableMaterialAbove){
+    //         materialLinksDict[collidableMaterialAbove.getId()].push(lowestMaterialData);
+    //         lowestMaterialData.setY(collidableMaterialAbove.getY() + collidableMaterialAbove.getHeight());
+    //     }else{
+    //         lowestMaterialData.setY(0);
+    //     }
+    //     dispatch(updateMaterialData(lowestMaterialData));
+
+    //     const updateLinkedMaterials = (materialDataId:string, dy:number) => {
+    //         for(const linkedMaterial of materialLinksDict[materialDataId]){
+    //             linkedMaterial.setY(linkedMaterial.getY() - dy);
+    //             dispatch(updateMaterialData(linkedMaterial));
+    //             updateLinkedMaterials(linkedMaterial.getId(), dy);
+    //         }
+    //     }
+
+    //     updateLinkedMaterials(lowestMaterialData.getId(), lowestMaterialDataYBeforeUpdate - lowestMaterialData.getY());
+
+    //     if(!remainSortedMaterialDataArrayByYDesc.length) return;
+    //     pushUpMaterials(remainSortedMaterialDataArrayByYDesc, materialLinksDict)
+    // }
+
     const handleMaterialHeightInputOnChange = useMemo(function () {
         return function (e:React.FormEvent<HTMLInputElement>) {
                 const sortMaterialDataArrayByY = () => {
+                    return getMaterialDataArray(materialDataDict).sort((a, b) => a.getY() - b.getY());
+                }
+                const sortOppositeMoveDirection = () => {
                     return getMaterialDataArray(materialDataDict).sort((a, b) => a.getY() - b.getY());
                 }
                 const sortMaterialDataArrayByYDesc = () => {
@@ -350,9 +566,8 @@ const MaterialSizePosMenu: React.FC = () => {
                         return null;
                     })();
 
-                    let previousLowestMaterialDataY = lowestMaterialData.getY();
+                    let lowestMaterialDataYBeforeUpdate = lowestMaterialData.getY();
                     if(collidableMaterialAbove){
-                        // alert("collidableMaterialAbove "+ collidableMaterialAbove.getId())
                         materialLinksDict[collidableMaterialAbove.getId()].push(lowestMaterialData);
                         lowestMaterialData.setY(collidableMaterialAbove.getY() + collidableMaterialAbove.getHeight());
                     }else{
@@ -360,31 +575,23 @@ const MaterialSizePosMenu: React.FC = () => {
                     }
                     dispatch(updateMaterialData(lowestMaterialData));
 
-
                     const updateLinkedMaterials = (materialDataId:string, dy:number) => {
-                        // alert("Object.keys(materialLinksDict)"+ Object.keys(materialLinksDict))
-
-                        // alert("---> materialDataId:"+materialDataId)
-                        // alert("materialLinksDict[materialDataId].length = "+materialLinksDict[materialDataId].length)
                         for(const linkedMaterial of materialLinksDict[materialDataId]){
-                            // alert("linkedMaterialId "+ linkedMaterialId)
-                            // alert("linkedMaterialId = "+ linkedMaterial.getId()+ ", linkedMaterial top = "+linkedMaterial.getY());
                             linkedMaterial.setY(linkedMaterial.getY() - dy);
                             dispatch(updateMaterialData(linkedMaterial));
                             updateLinkedMaterials(linkedMaterial.getId(), dy);
                         }
                     }
-                    // alert("lowestMaterialData "+lowestMaterialData.getId())
 
-                    updateLinkedMaterials(lowestMaterialData.getId(), lowestMaterialData.getY() - previousLowestMaterialDataY);
+                    updateLinkedMaterials(lowestMaterialData.getId(), lowestMaterialDataYBeforeUpdate - lowestMaterialData.getY());
 
                     if(!remainSortedMaterialDataArrayByYDesc.length) return;
                     pushUpMaterialsToRemoveVoidBetweenMaterials(remainSortedMaterialDataArrayByYDesc, materialLinksDict)
                 }
 
-                const pushDownMaterialsAfterUpperMaterialBottomChange = (changedMaterial:MaterialData, firstMaterialInitiatingPush:MaterialData, sortedMaterialDataArrayByY:MaterialData[]) => {
-                    const changedMaterialIndex = sortedMaterialDataArrayByY.findIndex(materialData => materialData.getId() === changedMaterial.getId());
-                    const lowerMaterialArr = sortedMaterialDataArrayByY.slice(changedMaterialIndex+1);
+                const pushDownMaterialsAfterUpperMaterialBottomChange = (changedMaterial:MaterialData, sortedOppositeMoveDirection:MaterialData[]) => {
+                    const changedMaterialIndex = sortedOppositeMoveDirection.findIndex(materialData => materialData.getId() === changedMaterial.getId());
+                    const lowerMaterialArr = sortedOppositeMoveDirection.slice(changedMaterialIndex+1);
                     const changedMaterialBottom = changedMaterial.getY() + changedMaterial.getHeight();
                     const nextCollidedLowerMaterial = lowerMaterialArr.find(materialData => 
                         changedMaterialBottom > materialData.getY() && !(changedMaterial.getXRatio() + changedMaterial.getWidthRatio()  < materialData.getXRatio() ||
@@ -393,36 +600,28 @@ const MaterialSizePosMenu: React.FC = () => {
                     if(!nextCollidedLowerMaterial){
                         //finished, we update materialDataDict, we remove voids between materials and return
                         // pushUpMaterialsToRemoveVoidBetweenMaterials([], sortedMaterialDataArrayByY, true);
-                        const sortedMaterialDataArrayByYDesc = sortMaterialDataArrayByYDesc();
+                        // const sortedMaterialDataArrayByYDesc = sortMaterialDataArrayByYDesc();
 
-                        const materialLinksDict:{ [key: string]: MaterialData[]; } = {};                   
-                        for(const materialData of sortedMaterialDataArrayByYDesc){
-                            materialLinksDict[materialData.getId()] = [];
-                        }
-                        // // alert("ok --> "+materialLinksDict[sortedMaterialDataArrayByYDesc[0].getId()])
-                        // for(const linkedMaterialId in materialLinksDict[sortedMaterialDataArrayByYDesc[0].getId()]){
-                        //     // alert("linkedMaterialId "+ linkedMaterialId)
-                        //     alert("yoo")
-                        //     const linkedMaterial = materialLinksDict[sortedMaterialDataArrayByYDesc[0].getId()][linkedMaterialId];
-                        //     alert("yeah linkedMaterialId = "+ linkedMaterialId+ ", linkedMaterial top = "+linkedMaterial.getY());
-         
+                        // const materialLinksDict:{ [key: string]: MaterialData[]; } = {};                   
+                        // for(const materialData of sortedMaterialDataArrayByYDesc){
+                        //     materialLinksDict[materialData.getId()] = [];
                         // }
-                        pushUpMaterialsToRemoveVoidBetweenMaterials(sortedMaterialDataArrayByYDesc, materialLinksDict)
+
+                        // // pushUpMaterialsToRemoveVoidBetweenMaterials(sortedMaterialDataArrayByYDesc, materialLinksDict)
                         return;
                     }
                     nextCollidedLowerMaterial.setY(changedMaterialBottom);
                     dispatch(updateMaterialData(nextCollidedLowerMaterial));
-                    pushDownMaterialsAfterUpperMaterialBottomChange(nextCollidedLowerMaterial, firstMaterialInitiatingPush, sortedMaterialDataArrayByY);
+                    pushDownMaterialsAfterUpperMaterialBottomChange(nextCollidedLowerMaterial, sortedOppositeMoveDirection);
 
                 }
-
 
             const setSelectedMaterialsHeight = (height: number) => {
                 const selectedMaterialDataList = getSelectedMaterialDataArray(materialDataDict);
                 for(let i=0; i<selectedMaterialDataList.length; i++){
                     selectedMaterialDataList[i].setHeight(height);
                     dispatch(updateMaterialData(selectedMaterialDataList[i]));
-                    pushDownMaterialsAfterUpperMaterialBottomChange(selectedMaterialDataList[i], selectedMaterialDataList[i], sortMaterialDataArrayByY());
+                    pushDownMaterialsAfterUpperMaterialBottomChange(selectedMaterialDataList[i], sortOppositeMoveDirection());
                     // pushUpMaterialsToRemoveVoidBetweenMaterials();
                     // pushUpMaterialsToRemoveVoidBetweenMaterials(sortedMaterialDataArrayByY()[0], [], sortedMaterialDataArrayByY());
                 }
@@ -531,6 +730,9 @@ const MaterialSizePosMenu: React.FC = () => {
                         value={materialHeightInputVal? materialHeightInputVal : 0} 
                         onChange={handleMaterialHeightInputOnChange} />
                 </div>
+                <button onTouchEnd={pushUpMaterialsMemo}>^</button>
+                <button onTouchEnd={pushRightMaterialsMemo}>&gt;</button>
+                {/* <button onTouchEnd={pushUpMaterialsMemo}>&lt;</button> */}
             </div>
         </div>
         );
