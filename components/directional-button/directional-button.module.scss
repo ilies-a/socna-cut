@@ -7,7 +7,10 @@ $directional-button-size: 80px;
         height: $directional-button-size;
         border: 1px solid rgb(56, 56, 56);
         background-color: rgba(255, 255, 255, 0.521);
-        border-radius: 50% 50% 50% 50%;
+        border-radius: 50%;
+
+        box-shadow: 0 2px 4px rgb(100, 100, 100);
+
         // pointer-events: none;
         
         // .directional-button{
@@ -30,3 +33,8 @@ $directional-button-size: 80px;
         //     transform: translateX(-100%);
         // }
     }
+
+    .directional-button-pressed {
+        box-shadow: 0 0 2px rgb(100, 100, 100);
+        transform: translateY(2px);
+      }

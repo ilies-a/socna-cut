@@ -9,6 +9,7 @@ import { setIsRecording } from '@/redux/screen-event/screen-event.actions';
 
 const DirectionalButton: React.FC = () => {
     const dispatch = useDispatch();
+    const isRecording: boolean = useSelector(selectIsRecording);
 
     const startRecordingTouches = (e:React.TouchEvent | React.MouseEvent) => {
         e.preventDefault();
@@ -21,7 +22,7 @@ const DirectionalButton: React.FC = () => {
     }
 
     return (
-            <div className={`${styles['directional-button']}`}
+            <div className={`${styles['directional-button']} ${isRecording ? styles['directional-button-pressed'] : null}`}
                 onTouchStart={startRecordingTouches}
                 onTouchEnd={endRecordingTouches}></div>
         );
