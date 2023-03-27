@@ -67,12 +67,12 @@ const AddMaterialButton: React.FC = () => {
     const addMaterialDataMemoForTests= useMemo(function () {
       return function () {
         for(let i= 2; i<5; i++){
-          const newMaterialData = new MaterialData(v4(), "normal", i*0.2, 20, 0.15);
+          const newMaterialData = new MaterialData(v4(), "normal", i*20, 20, 15);
           dispatch(addMaterialData(newMaterialData));
         }
-        dispatch(addMaterialData(  new MaterialData(v4(), "normal", 0.1, 20, 0.15) ));
-        dispatch(addMaterialData(  new MaterialData(v4(), "normal", 0.5, 80, 0.20) ));
-        dispatch(addMaterialData(  new MaterialData(v4(), "normal", 0.4, 110, 0.15) ));
+        dispatch(addMaterialData(  new MaterialData(v4(), "normal", 10, 20, 15) ));
+        dispatch(addMaterialData(  new MaterialData(v4(), "normal", 50, 80, 20) ));
+        dispatch(addMaterialData(  new MaterialData(v4(), "normal", 40, 110, 15) ));
 
         // dispatch(addMaterialData( new MaterialData(v4(), "normal", 0.1, 20, 0.15) )); //id, type, xRatio, y, widthRatio
         // dispatch(addMaterialData( new MaterialData(v4(), "normal", 0.1, 50, 0.3) )); //id, type, xRatio, y, widthRatio

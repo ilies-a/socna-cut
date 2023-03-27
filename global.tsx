@@ -248,8 +248,8 @@ export const getPlanLimit = (direction:Direction, planHeight:number): number => 
 export class KonvaPlanHandler {
   static limitLeft:number = 0;
   static limitTop:number = 0;
-  static limitRight:number = 1;
-  static limitBottom:number = 1;
+  static limitRight:number = 100;
+  static limitBottom:number = 100;
 
   static setLimitBottom(planHeight:number){
     KonvaPlanHandler.limitBottom = planHeight;

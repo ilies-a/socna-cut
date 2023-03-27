@@ -214,45 +214,6 @@ const MaterialSizePosMenu: React.FC = () => {
             }
 
             const pushWhenResizing = (resizingBloc:MaterialData, inputValue:number, pushDirection:Direction) => {
-
-                // const moveBackBlocsToFixOverflow = (overflowedBloc:MaterialData, overflow:number, fromOverflowedBlocToPushingBloc:MaterialData[], sortedTowardsMove:MaterialData[], initalPositions:[string, number][], moveBackDirection:Direction) => {
-                //     const movedBackBlocs:MaterialData[] = [];
-                //     for(const bloc of fromOverflowedBlocToPushingBloc){
-                //         if(blocIsInPath(overflowedBloc, bloc, moveBackDirection) && bloc1EndBeforeThanBloc2Start(overflowedBloc, bloc, moveBackDirection, false)){
-                //             // alert("before = "+bloc.getPos(moveBackDirection))
-                //             bloc.setPos(calculateValueMinusOverflowWithDirection(bloc.getPos(moveBackDirection), overflow, oppositeDirection(moveBackDirection) ), moveBackDirection);
-                //             // setBlocPosition(bloc, pushDirection, null, overflow);
-                //             // alert("after = "+bloc.getPos(moveBackDirection))
-
-                //             dispatch(updateMaterialData(bloc));
-                //             movedBackBlocs.push(bloc);
-                //         }
-                //     }
-
-                //     overflowedBloc.setPos(calculateValueMinusOverflowWithDirection(overflowedBloc.getPos(moveBackDirection), overflow, oppositeDirection(moveBackDirection) ), moveBackDirection);
-
-                //     // setBlocPosition(overflowedBloc, pushDirection, null, overflow);
-
-                //     dispatch(updateMaterialData(overflowedBloc));
-
-                //     const notMovedBackBlocs:MaterialData[] = sortedTowardsMove.filter(bloc => !movedBackBlocs.find(movedBackBlock => movedBackBlock.getId() === bloc.getId() || bloc.getId() === overflowedBloc.getId()));
-                    
-                //     for(const notMovedBloc of notMovedBackBlocs){
-                //         const blocInitialPosition = initalPositions.find(bloc => bloc[0] === notMovedBloc.getId()); //bloc[0] contains id, bloc[1] the position
-                //         if(blocInitialPosition){
-                //             // alert("notMovedBloc id ="+notMovedBloc.getId())
-                //             notMovedBloc.setPos(blocInitialPosition[1], moveBackDirection);
-                //             // notMovedBloc.setPos(calculateValueMinusOverflowWithDirection(notMovedBloc.getPos(moveBackDirection), overflow, moveBackDirection ), moveBackDirection);
-                //             // setBlocPosition(notMovedBloc, Direction.ToLeft, blocInitialPosition[1], 0);
-
-                //             // alert("notMovedBloc "+blocInitialPosition)
-                //             dispatch(updateMaterialData(notMovedBloc)); 
-                //         }
-
-                //     }
-                // }
-
-
                 class CollidableData{
                     shiftsAndPos:[number, number][] = [];
                     isAtExtremity:boolean = false; 
@@ -332,6 +293,11 @@ const MaterialSizePosMenu: React.FC = () => {
 
  
                 let sortedTowardsPush: MaterialData[] = sortTowardsDirection(pushDirection);  
+
+                // for(const bloc of sortedTowardsPush){
+                //     alert("blocId = "+bloc.getId()+", bloc.getXRatio() = "+bloc.getXRatio()+", bloc.getY() = "+bloc.getY() )
+                // }
+                
                 const resizingBlocNextSize = inputValue;
                 const resizingBlocNextEnd = resizingBloc.calculateEndWithSizeAndDirection(resizingBlocNextSize, pushDirection);
                 const collidablesHandler = new CollidablesHandler({}, []);
@@ -351,6 +317,8 @@ const MaterialSizePosMenu: React.FC = () => {
                     const biggestShiftPos =  collidableData.shiftsAndPos.sort((a, b) => b[0] - a[0])[0][1];
                     const bloc = materialDataDict[blocId];
                     pushedBlocks.push(bloc);
+                    // alert("blocId = "+blocId+", bloc.getXRatio() = "+bloc.getXRatio()+", bloc.getY() = "+bloc.getY() )
+
                     bloc.setPos(biggestShiftPos, pushDirection);
 
                     if(!collidableData.isAtExtremity) continue;
@@ -387,6 +355,8 @@ const MaterialSizePosMenu: React.FC = () => {
                         const bloc = materialDataDict[blocId];
                         pushedBackBlocks.push(bloc);
                         bloc.setPos(biggestShiftPosPos, pushDirection);
+
+                        // alert("blocId = "+blocId+", bloc.getXRatio() = "+bloc.getXRatio()+", bloc.getY() = "+bloc.getY() )
                     }
 
                     const pushingBackBlocIndex = pushedBlocks.findIndex(bloc => bloc.getId() === pushingBackBloc.getId());
@@ -415,86 +385,8 @@ const MaterialSizePosMenu: React.FC = () => {
 
                     pushingBackBloc.setPos(calculateValueMinusOverflowWithDirection(pushingBackBloc.getPos(pushBackDirection), overflow, pushBackDirection), pushBackDirection);
                     dispatch(updateMaterialData(pushingBackBloc));
-                    // for(const collidableAtExtremityWithItsOverflow of collidablesAtExtremityWithTheirOverflowSortedDescByOverflow){
-                    //     firstBiggestOverflow = collidablesAtExtremityWithTheirOverflowSortedDescByOverflow[0][1]; //blocWithBiggestOverflow[1];    
-                    //     alert("extreme collidable with biggest overflow = "+collidableAtExtremityWithItsOverflow[0].getId());
-
-                    //     const pushingBackBloc = collidableAtExtremityWithItsOverflow[0];
-                    //     const overflow = collidableAtExtremityWithItsOverflow[1];
-                    //     const pushBackDirection = oppositeDirection(pushDirection);
-                    //     const pushBackBlocNextEnd = calculateValueMinusOverflowWithDirection(pushingBackBloc.getEnd(pushBackDirection), overflow, pushBackDirection) ; //pushingBackBloc.calculateEndWithSizeAndDirection(pushingBackBloc.getSize(pushBackDirection), pushBackDirection);
-                    //     const sortedTowardsPushBack: MaterialData[] = sortTowardsDirection(pushBackDirection);  
-                    //     const collidablesHandler = new CollidablesHandler({}, []);
-
-                    //     pushNextBlocs(pushingBackBloc, pushBackBlocNextEnd, sortedTowardsPushBack, resizingBloc.getId(), pushBackDirection, collidablesHandler);
-                    //     pushingBackBloc.setPos(calculateValueMinusOverflowWithDirection(pushingBackBloc.getPos(pushBackDirection), overflow, pushBackDirection), pushBackDirection);
-                    //     dispatch(updateMaterialData(pushingBackBloc));
-
-                    // }
                 }
 
-
-                
-
-                
-
-                // let overflow = 0//firstBiggestOverflow;
-
-                // while(Object.keys(pushedBlocks).length){
-                //     // alert("before blocWithBiggestOverflow[0] id = "+ blocWithBiggestOverflow[0]?.getId()+", blocWithBiggestOverflow[1] = "+blocWithBiggestOverflow[1]);
-
-
-                //     const pushingBackBloc = collidablesWithTheirOverflowSortedDescByOverflow[0][0];
-                //     const pushBackDirection = oppositeDirection(pushDirection);
-                //     const pushBackBlocNextEnd = calculateValueMinusOverflowWithDirection(pushingBackBloc.getEnd(pushBackDirection), overflow, pushBackDirection) ; //pushingBackBloc.calculateEndWithSizeAndDirection(pushingBackBloc.getSize(pushBackDirection), pushBackDirection);
-                //     const sortedTowardsPushBack: MaterialData[] = sortTowardsDirection(pushBackDirection);  
-                //     const collidableHandler = new CollidablesHandler({}, []);
-
-                //     pushNextBlocs(pushingBackBloc, pushBackBlocNextEnd, sortedTowardsPushBack, collidableHandler, resizingBloc.getId(), pushBackDirection, [null, 0]);
-                //     pushingBackBloc.setPos(calculateValueMinusOverflowWithDirection(pushingBackBloc.getPos(pushBackDirection), overflow, pushBackDirection), pushBackDirection);
-                //     dispatch(updateMaterialData(pushingBackBloc));
-
-                //     //we restart the initial push
-                //     // sortedTowardsPush = sortTowardsDirection(pushDirection);
-                //     // blocWithBiggestOverflow = pushNextBlocs(resizingBloc, resizingBlocNextEnd, sortedTowardsPush, '', pushDirection, [null, 0]);
-                //     // alert("after blocWithBiggestOverflow[0] id = "+ blocWithBiggestOverflow[0]?.getId()+", blocWithBiggestOverflow[1] = "+blocWithBiggestOverflow[1]);
-                //     overflow = 0; //blocWithBiggestOverflow[1];
-                // }
-
-                // if(blocWithBiggestOverflow[1] !== 0){
-                //     const blocWithbBiggestOverflow = blocWithBiggestOverflow[0] as MaterialData;
-                //     let fromOverflowedBlocToPushingBloc: MaterialData[] = sortBackwardsDirectionByEnd(pushDirection);  //getMaterialDataArray(materialDataDict).sort((a, b) => a.getEnd(pushDirection) - b.getEnd(pushDirection));      
-                //     const blocWithbBiggestOverflowIndex = fromOverflowedBlocToPushingBloc.findIndex(bloc => bloc.getId() === blocWithbBiggestOverflow.getId());
-                //     const resizingBlocIndex = fromOverflowedBlocToPushingBloc.findIndex(bloc => bloc.getId() === resizingBloc.getId());
-                //     fromOverflowedBlocToPushingBloc = fromOverflowedBlocToPushingBloc.slice(blocWithbBiggestOverflowIndex + 1, resizingBlocIndex + 1);
-                //     // alert("fromOverflowedBlocToPushingBloc[0] id "+fromOverflowedBlocToPushingBloc[0].getId())
-                //     moveBackBlocsToFixOverflow(blocWithbBiggestOverflow, biggestOverflow, fromOverflowedBlocToPushingBloc, sortedTowardsPush.slice().reverse(), initialPositions, oppositeDirection(pushDirection));                              
-                
-                //     //while there is an overflow we restart the function
-                //     pushNextBlocs(resizingBloc, calculateValueMinusOverflowWithDirection(resizingBlocNextEnd, biggestOverflow, pushDirection), sortedTowardsPush, pushDirection, [null, 0]);
-                // }
-                
-
-
-                
-
-                // resizingBlocNextPos -= biggestOverflow;
-                
-                // alert("valueOverflows = "+valueOverflows(resizingBlocNextPos, planLimit, pushDirection) +
-                // ", planLimit = " +planLimit+
-                // ", resizingBlocNextPos = "+resizingBlocNextPos)
-                // let resizingBlocOverflow = 0; //independently to other blocs, if resizing exceed limit 
-                // if(biggestOverflow === 0 && valueOverflows(resizingBlocNextPos, planLimit, pushDirection)){ //
-                //     resizingBlocOverflow = resizingBlocNextPos;
-                //     resizingBlocNextPos = planLimit;
-                // }
-                // resizingBloc.setXRatio(resizingBlocNextPos);
-
-                // resizingBloc.setPos(calculateValueMinusOverflowWithDirection(resizingBloc.getPos(pushDirection), - biggestOverflow, pushDirection), pushDirection);
-
-
-                // resizingBloc.setWidthRatio(inputValue + biggestOverflow + resizingBlocOverflow); //pushResult[0] contains overflow
-                
                 const size = inputValue - firstBiggestOverflow;
                 resizingBloc.setSizeWithDirection(size, pushDirection);
 
@@ -519,15 +411,15 @@ const MaterialSizePosMenu: React.FC = () => {
 
             if(direction === Direction.ToLeft || direction === Direction.ToRight){
 
-                let inputValueFloat: number = parseFloat(e.currentTarget.value);
+                let inputValueFloat: number = parseInt(e.currentTarget.value);
                 if(!inputValueFloat) {
                     setMaterialWidthInputVal("");
-                    setSelectedMaterialsSize(parseFloat(minWidth) / 100, direction);
+                    setSelectedMaterialsSize(parseInt(minWidth), direction);
                     return;
                 };
         
-                let minWidthFloat: number = parseFloat(minWidth);
-                let maxWidthFloat: number = parseFloat(maxWidth);
+                let minWidthFloat: number = parseInt(minWidth);
+                let maxWidthFloat: number = parseInt(maxWidth);
         
                 let nextValue: string;
         
@@ -539,17 +431,17 @@ const MaterialSizePosMenu: React.FC = () => {
                     nextValue = e.currentTarget.value;
                 }
                 setMaterialWidthInputVal(nextValue);
-                setSelectedMaterialsSize(parseFloat(nextValue) / 100, direction);
+                setSelectedMaterialsSize(parseInt(nextValue), direction);
             } else{
-                let inputValueFloat: number = parseFloat(e.currentTarget.value);
+                let inputValueFloat: number = parseInt(e.currentTarget.value);
                 if(!inputValueFloat) {
                     setMaterialHeightInputVal("");
-                    setSelectedMaterialsSize(parseFloat(minHeight), direction);
+                    setSelectedMaterialsSize(parseInt(minHeight), direction);
                     return;
                 };
         
-                let minHeightFloat: number = parseFloat(minHeight);
-                let maxHeightFloat: number = parseFloat(maxHeight);
+                let minHeightFloat: number = parseInt(minHeight);
+                let maxHeightFloat: number = parseInt(maxHeight);
         
                 let nextValue: string;
         
@@ -561,7 +453,7 @@ const MaterialSizePosMenu: React.FC = () => {
                     nextValue = e.currentTarget.value;
                 }
                 setMaterialHeightInputVal(nextValue);
-                setSelectedMaterialsSize(parseFloat(nextValue), direction);
+                setSelectedMaterialsSize(parseInt(nextValue), direction);
             }
 
 
@@ -897,15 +789,15 @@ const MaterialSizePosMenu: React.FC = () => {
                 return;
             }
 
-            let inputValueFloat: number = parseFloat(e.currentTarget.value);
+            let inputValueFloat: number = parseInt(e.currentTarget.value);
             if(!inputValueFloat) {
                 setMaterialHeightInputVal("");
-                setSelectedMaterialsHeight(parseFloat(minHeight), bottomToTop);
+                setSelectedMaterialsHeight(parseInt(minHeight), bottomToTop);
                 return;
             };
     
-            let minHeightFloat: number = parseFloat(minHeight);
-            let maxHeightFloat: number = parseFloat(maxHeight);
+            let minHeightFloat: number = parseInt(minHeight);
+            let maxHeightFloat: number = parseInt(maxHeight);
     
             let nextValue: string;
     
@@ -917,12 +809,12 @@ const MaterialSizePosMenu: React.FC = () => {
                 nextValue = e.currentTarget.value;
             }
             setMaterialHeightInputVal(nextValue);
-            setSelectedMaterialsHeight(parseFloat(nextValue), bottomToTop);
+            setSelectedMaterialsHeight(parseInt(nextValue), bottomToTop);
       }, [dispatch, materialDataDict]);
 
 
     const handleOnBlur = (e:React.FormEvent<HTMLInputElement>) => {
-        let inputValueFloat: number = parseFloat(e.currentTarget.value);
+        let inputValueFloat: number = parseInt(e.currentTarget.value);
         if(!inputValueFloat) {
             switch(e.currentTarget.name){
                 case("material-width-number-input"):
@@ -933,7 +825,7 @@ const MaterialSizePosMenu: React.FC = () => {
                     break;
             }
             // setMaterialHeightInputVal(minHeight);
-            // setSelectedMaterialsHeight(parseFloat(minHeight));
+            // setSelectedMaterialsHeight(parseInt(minHeight));
             return;
         };
     }

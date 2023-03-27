@@ -48,7 +48,7 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     },[id]);
 
     const materialXFromRatio = (xRatio:number):number => {
-      return xRatio * window.innerWidth * KONVA_WIDTH_SCALE;
+      return xRatio * window.innerWidth * KONVA_WIDTH_SCALE / 100;
     }
 
     const xMemo = useMemo(
@@ -60,7 +60,7 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     );
 
     const materialWidthFromRatio = (widthRatio:number):number => {
-        return widthRatio * window.innerWidth * KONVA_WIDTH_SCALE;
+        return widthRatio * window.innerWidth * KONVA_WIDTH_SCALE / 100;
     }
 
     const widthMemo = useMemo(
