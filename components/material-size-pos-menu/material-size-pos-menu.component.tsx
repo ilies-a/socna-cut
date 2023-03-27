@@ -95,10 +95,10 @@ const MaterialSizePosMenu: React.FC = () => {
         switch(direction){
             case Direction.ToLeft:
             case Direction.ToTop:
-                return bloc1NextEnd - bloc2.getStart(direction);
+                return Math.abs(bloc1NextEnd - bloc2.getStart(direction)) > 1? bloc1NextEnd - bloc2.getStart(direction) : 0;
             case Direction.ToRight:
             case Direction.ToBottom:
-                return bloc2.getStart(direction) - bloc1NextEnd;
+                return Math.abs(bloc2.getStart(direction) - bloc1NextEnd) > 1 ? bloc2.getStart(direction) - bloc1NextEnd : 0;
         }
     }
 
