@@ -13,6 +13,7 @@ import { updateMaterialData } from '@/redux/konva/konva.actions'
 import { useEffect, useMemo, useState } from 'react'
 import AddMaterialDraggableIconSupport from '@/components/add-material-draggable-icon-support/add-material-draggable-icon-support.component'
 import MaterialSizePosMenu from '@/components/material-size-pos-menu/material-size-pos-menu.component'
+import DirectionalButton from '@/components/directional-button/directional-button.component'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -57,7 +58,11 @@ const AppScreen:React.FC = () =>{
       <AddMaterialDraggableIconSupport>
         <div className={styles.main} onTouchEnd={unselectALLMaterials}>
           <KonvaWrapper/>
-          {blockDimMenuOpen ? <MaterialSizePosMenu /> : null}
+          {blockDimMenuOpen ? 
+          <div>
+            <MaterialSizePosMenu />        
+            <DirectionalButton/>
+            </div> : null}
         </div>
       </AddMaterialDraggableIconSupport>
     </ScreenEventWrapper>)

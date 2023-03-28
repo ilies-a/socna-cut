@@ -4,14 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectIsRecording, selectScreenSize, selectTouches } from '@/redux/screen-event/screen-event.selectors';
 import { Direction, KONVA_HEIGHT_SCALE, KONVA_WIDTH_SCALE, MaterialData, getMaterialDataArray, getPlanLimit, getSelectedMaterialDataArray, KonvaPlanHandler } from '@/global';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
-import { selectDraggingBlockDimMenu, selectMaterialDataDict } from '@/redux/konva/konva.selectors';
+import { selectDraggingBlockDimMenu, selectMaterialDataDict, selectPadPosition } from '@/redux/konva/konva.selectors';
 import { setIsRecording } from '@/redux/screen-event/screen-event.actions';
 import DirectionalButton from '../directional-button/directional-button.component';
 // import DoubleRangeSlider from '../double-range-slider/double-range-slider.component';
 
 const MaterialSizePosMenu: React.FC = () => {
     // const [directionButtonInitialPos, setDirectionButtonInitialPos] = useState<[number, number]>([0, 0]);
-    const [directionalButtonPos, setDirectionalButtonPos] = useState<[number, number]>([-1000, 0]);
+    const outOfScreenPos = -1000;
+
+    const [directionalButtonPos, setDirectionalButtonPos] = useState<[number, number]>([outOfScreenPos, outOfScreenPos]);
     const touches:React.TouchList | null = useSelector(selectTouches);
     const dispatch = useDispatch();
     const screenSize: [number, number] = useSelector(selectScreenSize);
@@ -21,6 +23,7 @@ const MaterialSizePosMenu: React.FC = () => {
     // const initialPosScreenRatio = [0.5, 0.7];
     const [materialWidthInputVal, setMaterialWidthInputVal ] = useState<string>("0");
     const [materialHeightInputVal, setMaterialHeightInputVal ] = useState<string>("0");
+    const padPosition:[number, number] = useSelector(selectPadPosition);
 
     // const [konvaSize, setKonvaSize ] = useState<[number, number]>([0, 0]);
     // const [konvaPos, setKonvaPos ] = useState<[number, number]>([0, 0]);
@@ -39,7 +42,7 @@ const MaterialSizePosMenu: React.FC = () => {
     // const [widthHeightDirection, setHeightChangeDirection] = useState<boolean>(true); //true if direction to bottom, otherwise false
 
     useEffect(()=>{
-        setDirectionalButtonPos([screenSize[0] * 0.5, screenSize[1] * 0.6]);
+        setDirectionalButtonPos([screenSize[0] * 0.7, screenSize[1] * 0.6]);
     }, [screenSize]);
 
     useEffect(()=>{
@@ -48,9 +51,15 @@ const MaterialSizePosMenu: React.FC = () => {
         }
         const konvaPos = [(screenSize[0] - screenSize[0] * KONVA_WIDTH_SCALE) * 0.5, (screenSize[1] - screenSize[1] * KONVA_HEIGHT_SCALE) * 0.5] as [number, number];
         const touchPos = getTouchPos(touches[0], konvaPos);
-        setDirectionalButtonPos(touchPos);
+        // alert("touches[0].clientX = "+touches[0].clientX+", window.innerWidth = "+window.innerWidth);
+        // setDirectionalButtonPos([touches[0].clientX, touches[0].clientY]);
 
     },[touches, isRecording, screenSize, draggingBlockDimMenu]);
+
+    useEffect(()=>{
+        if(!padPosition) return;
+        setDirectionalButtonPos(padPosition);
+    },[padPosition])
 
     const getTouchPos = (touch:React.Touch, konvaPos:[number, number]): [number, number] => {
         const touchX = touch.clientX - konvaPos[0];
@@ -844,7 +853,7 @@ const MaterialSizePosMenu: React.FC = () => {
 
     return (
         <div className={`${styles['main-wrapper']}`} style={{"left":""+ directionalButtonPos[0] +"px", "top":""+ directionalButtonPos[1] +"px"}} onTouchEnd={stopEventPropagation}>
-            <DirectionalButton/>
+            {/* <DirectionalButton/> */}
             <div className={`${styles['material-size-input-wrappers']}`}>
                 <div className={`${styles['material-size-input-wrapper']} ${styles['material-width-input-wrapper']}`}>
                     {/* <DoubleRangeSlider/> */}
@@ -878,12 +887,12 @@ const MaterialSizePosMenu: React.FC = () => {
                     ruler='false'
                     /> */}
                     <span>w</span>
-                    {/* <input className={`${styles['material-size-number-input']} 
+                    <input className={`${styles['material-size-number-input']} 
                         ${styles['material-width-number-input']}`} 
                         name="material-width-number-input" type="number" 
                         value={materialWidthInputVal} 
                         onChange={(e) => {handleMaterialSizeInputOnChange(e, Direction.ToRight)}}
-                        onBlur={handleOnBlur}/> */}
+                        onBlur={handleOnBlur}/>
                     <span className={`${styles['size-unit']}`}>%</span>
                 </div>
                 <div className={`${styles['material-size-input-wrapper']} ${styles['material-height-input-wrapper']}`}>
@@ -904,12 +913,12 @@ const MaterialSizePosMenu: React.FC = () => {
                             onChange={(e) => {handleMaterialSizeInputOnChange(e, Direction.ToBottom)}}/>
                     </div>
                     <span>h</span>
-                    {/* <input className={`${styles['material-size-number-input']} ${styles['material-height-number-input']}`}
+                    <input className={`${styles['material-size-number-input']} ${styles['material-height-number-input']}`}
                         name="material-height-number-input" 
                         type="number" 
                         value={materialHeightInputVal} 
                         onChange={(e) => {handleMaterialSizeInputOnChange(e, Direction.ToTop)}}
-                        onBlur={handleOnBlur}/> */}
+                        onBlur={handleOnBlur}/>
                     <span className={`${styles['size-unit']}`}>px</span>
                 </div>
                 <div className={`${styles['push-buttons-wrapper']}`} >

@@ -3,8 +3,9 @@ const KonvaActionTypes = {
   UPDATE_MATERIAL_DATA: "UPDATE_MATERIAL_DATA",
   SET_DRAGGABLE_ICON: "SET_DRAGGABLE_ICON",
   SET_DRAGGING_BLOCK_DIM_MENU: "SET_DRAGGING_BLOCK_DIM_MENU",
-
-  };
+  SET_PAD_POSITION: "SET_PAD_POSITION",
+  SET_ICON_POSITION: "SET_ICON_POSITION"
+};
   
-  export default KonvaActionTypes;
+export default KonvaActionTypes;
   

@@ -34,9 +34,10 @@ const AddMaterialDraggableIconSupport: React.FC<Props> = ({ children }) => {
             setIconPos([outOfScreenPos, outOfScreenPos]);
             return
         }
-        const konvaPos = [(screenSize[0] - screenSize[0] * KONVA_WIDTH_SCALE) * 0.5, (screenSize[1] - screenSize[1] * KONVA_HEIGHT_SCALE) * 0.5] as [number, number];
-        const touchPos = getTouchPos(touches[0], konvaPos);
-        setIconPos(touchPos);
+        // const konvaPos = [(screenSize[0] - screenSize[0] * KONVA_WIDTH_SCALE) * 0.5, (screenSize[1] - screenSize[1] * KONVA_HEIGHT_SCALE) * 0.5] as [number, number];
+        // const touchPos = getTouchPos(touches[0], konvaPos);
+        const shiftForBetterUserExperience = 50;
+        setIconPos([touches[0].clientX - shiftForBetterUserExperience, touches[0].clientY - shiftForBetterUserExperience]);
 
     },[touches, isRecording, screenSize, draggableIcon, outOfScreenPos]);
     

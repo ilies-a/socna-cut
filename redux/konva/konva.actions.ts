@@ -20,3 +20,13 @@ export const setDraggingBlockDimMenu = (dragging: boolean) => ({
   type: KonvaActionTypes.SET_DRAGGING_BLOCK_DIM_MENU,
   payload: dragging,
 });
+
+export const setPadPosition = (position: [number, number]) => ({
+  type: KonvaActionTypes.SET_PAD_POSITION,
+  payload: position,
+});
+
+export const setIconPosition = (position: [number, number]) => ({
+  type: KonvaActionTypes.SET_ICON_POSITION,
+  payload: position,
+});

@@ -16,3 +16,13 @@ export const selectDraggingBlockDimMenu = createSelector(
   [selectKonva],
   (konva) => konva.draggingBlockDimMenu
 );
+
+export const selectPadPosition = createSelector(
+  [selectKonva],
+  (konva) => konva.padPosition
+);
+
+export const selectIconPosition = createSelector(
+  [selectKonva],
+  (konva) => konva.iconPosition
+);

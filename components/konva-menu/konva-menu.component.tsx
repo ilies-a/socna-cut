@@ -43,7 +43,6 @@ import AddMaterialDraggableIconSupport from '../add-material-draggable-icon-supp
 const KonvaMenu: React.FC = () => {
   const [addMaterialMenuOpen, setAddMaterialMenuOpen] = useState<boolean>(false);
   // const blockDimOpen: boolean = useSelector(selectBlockDimOpen);
-  const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
 
   const handleClick = useCallback(() => {
     setAddMaterialMenuOpen(addMaterialMenuOpen => !addMaterialMenuOpen)
