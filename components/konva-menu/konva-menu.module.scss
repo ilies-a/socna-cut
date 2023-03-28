@@ -1,7 +1,23 @@
-.menu{
+// .main{
+//   position: absolute;
+//   width: 100%;
+//   border: 10px solid green;
+//   display: flex;
+//   flex-direction: column;
+//   justify-content: end;
+  .menu{
+   position: relative;
+    border: 2px solid blue;
+    bottom:0;
     text-align: center;
-    button{
-      width: 150px;
-      height: 50px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+      button{
+        width: 150px;
+        height: 50px;
+      }
     }
-  }
+// }

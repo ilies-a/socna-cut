@@ -10,7 +10,9 @@ import { selectIsRecording } from '@/redux/screen-event/screen-event.selectors'
 import ScreenEventWrapper from '@/components/screen-event-wrapper/screen-event-wrapper.component'
 import { selectMaterialDataDict } from '@/redux/konva/konva.selectors'
 import { updateMaterialData } from '@/redux/konva/konva.actions'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import AddMaterialDraggableIconSupport from '@/components/add-material-draggable-icon-support/add-material-draggable-icon-support.component'
+import MaterialSizePosMenu from '@/components/material-size-pos-menu/material-size-pos-menu.component'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -32,6 +34,12 @@ const AppScreen:React.FC = () =>{
   const dispatch = useDispatch();
   const materialDataDict: { [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
 
+  const [blockDimMenuOpen, setBlockDimMenuOpen] = useState<boolean>(false);
+
+  useEffect(()=>{
+    setBlockDimMenuOpen( getSelectedMaterialDataArray(materialDataDict).length > 0 );
+  },[materialDataDict])
+  
   const unselectALLMaterials = useMemo(function () {
     return function (e:React.TouchEvent<HTMLInputElement>) {
       for(const id in materialDataDict){
@@ -46,8 +54,11 @@ const AppScreen:React.FC = () =>{
 
   return( 
     <ScreenEventWrapper>
-      <div className={styles.main} onTouchEnd={unselectALLMaterials}>
-        <KonvaWrapper/>
-      </div>
+      <AddMaterialDraggableIconSupport>
+        <div className={styles.main} onTouchEnd={unselectALLMaterials}>
+          <KonvaWrapper/>
+          {blockDimMenuOpen ? <MaterialSizePosMenu /> : null}
+        </div>
+      </AddMaterialDraggableIconSupport>
     </ScreenEventWrapper>)
 }

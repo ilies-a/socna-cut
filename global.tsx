@@ -5,9 +5,8 @@ export const MATERIAL_STROKE = 0.2;
 
 export enum Direction {ToLeft, ToRight, ToTop, ToBottom};
 
-export class MaterialData {
+export abstract class MaterialData {
   private id:string;
-  private type:string;
   private xRatio: number;
   private y: number;
   private widthRatio: number;
@@ -15,9 +14,8 @@ export class MaterialData {
   // path:[number, number][];
   isSelected:boolean = false;
 
-  constructor(id:string, type:string, xRatio:number, y:number, widthRatio:number){
+  constructor(id:string, xRatio:number, y:number, widthRatio:number){
     this.id = id;
-    this.type = type;
     this.xRatio = xRatio;
     this.y = y;
     this.widthRatio = widthRatio;
@@ -208,6 +206,77 @@ export class MaterialData {
   }
 
 }
+
+export const blockTypes: { [key: string]: any } = {
+    'Type1': {
+      'name': 'Type1',
+      'colorForTests': 'blue' 
+    },
+    'Type2': {
+      'name': 'Type2',
+      'colorForTests': 'green' 
+    },
+    'Type3': {
+      'name': 'Type3',
+      'colorForTests': 'yellow' 
+    },
+    'Type4': {
+      'name': 'Type4',
+      'colorForTests': 'orange' 
+    },
+    'Type5': {
+      'name': 'Type5',
+      'colorForTests': 'cyan' 
+    },
+    'Type6': {
+      'name': 'Type6',
+      'colorForTests': 'magenta' 
+    },
+    'Type7': {
+      'name': 'Type7',
+      'colorForTests': 'brown' 
+    },
+    'Type8': {
+      'name': 'Type8',
+      'colorForTests': 'red' 
+    },
+  };
+
+
+export class BlockType1Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = "blue";
+  constructor(id:string, xRatio:number, y:number, widthRatio:number){
+    super(id, xRatio, y, widthRatio )
+  }
+}
+
+export class BlockType2Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = "green";
+  constructor(id:string, xRatio:number, y:number, widthRatio:number){
+    super(id, xRatio, y, widthRatio )
+  }
+}
+
+export class BlockType3Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = "yellow";
+  constructor(id:string, xRatio:number, y:number, widthRatio:number){
+    super(id, xRatio, y, widthRatio )
+  }
+}
+
+// class BlockType{
+//   name:string;
+//   imageUrl:string;
+
+//   constructor(name:string, imageUrl:string){
+//     this.name = name;
+//     this.imageUrl = imageUrl; 
+//   }
+// }
+
 
 export const getSelectedMaterialDataArray = ( materialDataDict: { [key: string]: MaterialData }): MaterialData[] => {
   return Object.keys(materialDataDict).map(key => materialDataDict[key]).filter(materialData => materialData.getIsSelected());

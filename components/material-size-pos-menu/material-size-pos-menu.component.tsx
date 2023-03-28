@@ -4,18 +4,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectIsRecording, selectScreenSize, selectTouches } from '@/redux/screen-event/screen-event.selectors';
 import { Direction, KONVA_HEIGHT_SCALE, KONVA_WIDTH_SCALE, MaterialData, getMaterialDataArray, getPlanLimit, getSelectedMaterialDataArray, KonvaPlanHandler } from '@/global';
 import { updateMaterialData } from '@/redux/konva/konva.actions';
-import { selectMaterialDataDict } from '@/redux/konva/konva.selectors';
+import { selectDraggingBlockDimMenu, selectMaterialDataDict } from '@/redux/konva/konva.selectors';
 import { setIsRecording } from '@/redux/screen-event/screen-event.actions';
 import DirectionalButton from '../directional-button/directional-button.component';
 // import DoubleRangeSlider from '../double-range-slider/double-range-slider.component';
 
 const MaterialSizePosMenu: React.FC = () => {
     // const [directionButtonInitialPos, setDirectionButtonInitialPos] = useState<[number, number]>([0, 0]);
-    const [directionalButtonPos, setDirectionalButtonPos] = useState<[number, number]>([10000, 0]);
+    const [directionalButtonPos, setDirectionalButtonPos] = useState<[number, number]>([-1000, 0]);
     const touches:React.TouchList | null = useSelector(selectTouches);
     const dispatch = useDispatch();
     const screenSize: [number, number] = useSelector(selectScreenSize);
     const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
+    const draggingBlockDimMenu = useSelector(selectDraggingBlockDimMenu);
     // const [draggable, setDraggable] = useState<boolean>(false);
     // const initialPosScreenRatio = [0.5, 0.7];
     const [materialWidthInputVal, setMaterialWidthInputVal ] = useState<string>("0");
@@ -42,14 +43,14 @@ const MaterialSizePosMenu: React.FC = () => {
     }, [screenSize]);
 
     useEffect(()=>{
-        if(!touches || !isRecording){
+        if(!(draggingBlockDimMenu && touches && isRecording)){
             return
         }
         const konvaPos = [(screenSize[0] - screenSize[0] * KONVA_WIDTH_SCALE) * 0.5, (screenSize[1] - screenSize[1] * KONVA_HEIGHT_SCALE) * 0.5] as [number, number];
         const touchPos = getTouchPos(touches[0], konvaPos);
         setDirectionalButtonPos(touchPos);
 
-    },[touches, isRecording, screenSize]);
+    },[touches, isRecording, screenSize, draggingBlockDimMenu]);
 
     const getTouchPos = (touch:React.Touch, konvaPos:[number, number]): [number, number] => {
         const touchX = touch.clientX - konvaPos[0];
@@ -92,13 +93,17 @@ const MaterialSizePosMenu: React.FC = () => {
     // }
 
     const bloc1EndExceedsBloc2Start = (bloc1NextEnd:number, bloc2:MaterialData, direction:Direction): number =>{
+        let shift;
+        const tolerance = 1;
         switch(direction){
             case Direction.ToLeft:
             case Direction.ToTop:
-                return Math.abs(bloc1NextEnd - bloc2.getStart(direction)) > 1? bloc1NextEnd - bloc2.getStart(direction) : 0;
+                shift = bloc1NextEnd - bloc2.getStart(direction);
+                return Math.abs(shift) > tolerance ? shift : 0;
             case Direction.ToRight:
             case Direction.ToBottom:
-                return Math.abs(bloc2.getStart(direction) - bloc1NextEnd) > 1 ? bloc2.getStart(direction) - bloc1NextEnd : 0;
+                shift = bloc2.getStart(direction) - bloc1NextEnd;
+                return Math.abs(shift) > tolerance ? shift : 0;
         }
     }
 

@@ -1,0 +1,22 @@
+@import "../../styles/variables";
+
+.main-wrapper{
+    display: inline-block;
+    margin: 5px;
+    width: $block-icon-size;
+    height: $block-icon-size;
+    user-select: none;
+
+    // .draggable-icon{
+    //     $scale-anim-duration: 0.5s;
+    //     position: absolute;
+    //     width: $icon-button-size;
+    //     height: $icon-button-size;
+    //     border: 1px solid grey;
+    //     opacity: 1;
+    // }
+    // .draggable-icon-selected{
+    //     opacity: 1;
+    //     transform: scale(-50%, -50%);
+    // }
+}

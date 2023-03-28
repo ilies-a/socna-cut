@@ -1,0 +1,11 @@
+.buttons-wrapper{
+    position: absolute;
+    transform: translate(0, -100%);
+    border: 1px solid grey;
+    border-radius: 10px;
+    overflow-x: scroll;
+    background-color: rgba(39, 39, 39, 0.753);
+    width: 100%;
+    height: fit-content;
+    display: flex;
+}

@@ -1,4 +1,4 @@
-import { KONVA_WIDTH_SCALE, MATERIAL_STROKE, MaterialData } from "@/global";
+import { KONVA_WIDTH_SCALE, MATERIAL_STROKE, BlockType1Data, MaterialData } from "@/global";
 import { useEffect, useMemo, useState } from "react";
 import { Group, Rect, Text } from "react-konva";
 import useImage from 'use-image';
