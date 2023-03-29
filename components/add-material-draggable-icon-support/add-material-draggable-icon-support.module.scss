@@ -1,17 +1,17 @@
 @import "../../styles/variables";
 
-$reduction-scale: 0.5;
+//$reduction-scale: 0.5;
 
 .main{
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 1px solid orange;
+    // border: 1px solid orange;
     .draggable-icon{
         position: absolute;
         opacity: 0.5;
-        width: $block-icon-size * $reduction-scale;
-        height: $block-icon-size * $reduction-scale;
+        width: $block-icon-size-on-plan-default-value;
+        height: $block-icon-size-on-plan-default-value;
         animation: reduce 0.3s;
     }
 }
@@ -23,8 +23,8 @@ $reduction-scale: 0.5;
     }
   
     to {
-        width: $block-icon-size * $reduction-scale;
-        height: $block-icon-size * $reduction-scale;
+        width: $block-icon-size-on-plan-default-value;
+        height: $block-icon-size-on-plan-default-value;
 
     }
   }

@@ -1,5 +1,10 @@
-import { MaterialData } from "@/global";
+import { MaterialData, StateSpace } from "@/global";
 import KonvaActionTypes from "./konva.types";
+
+export const setPlanStateSpace = (stateSpace: StateSpace) => ({
+  type: KonvaActionTypes.SET_PLAN_STATE_SPACE,
+  payload: stateSpace,
+});
 
 export const addMaterialData = (MaterialData: MaterialData) => ({
   type: KonvaActionTypes.ADD_MATERIAL_DATA,
@@ -29,4 +34,19 @@ export const setPadPosition = (position: [number, number]) => ({
 export const setIconPosition = (position: [number, number]) => ({
   type: KonvaActionTypes.SET_ICON_POSITION,
   payload: position,
+});
+
+export const updateDraggableIconPosition = (position: [number, number]) => ({
+  type: KonvaActionTypes.UPDATE_DRAGGABLE_ICON_POSITION,
+  payload: position,
+});
+
+export const setTappingOnIconButton = (tapping: boolean) => ({
+  type: KonvaActionTypes.SET_TAPPING_ON_ICON_BUTTON,
+  payload: tapping,
+});
+
+export const setAddBlockMenuStateSpace = (stateSpace: StateSpace) => ({
+  type: KonvaActionTypes.SET_ADD_BLOCK_MENU_STATE_SPACE,
+  payload: stateSpace,
 });

@@ -1,24 +1,29 @@
+import { v4 } from 'uuid';
+
 export const KONVA_WIDTH_SCALE = 0.8;
 export const KONVA_HEIGHT_SCALE = 0.8;
 // export const KONVA_PADDING = 1;
 export const MATERIAL_STROKE = 0.2;
 
+export const OUT_OF_SCREEN_POSITION: [number, number] = [-1000, -1000];
+
 export enum Direction {ToLeft, ToRight, ToTop, ToBottom};
 
 export abstract class MaterialData {
-  private id:string;
+  private id:string = v4();
   private xRatio: number;
   private y: number;
   private widthRatio: number;
-  private height: number = 20;
+  private height: number;
   // path:[number, number][];
-  isSelected:boolean = false;
+  private isSelected:boolean = false;
+  colorForTests: string = 'grey';
 
-  constructor(id:string, xRatio:number, y:number, widthRatio:number){
-    this.id = id;
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    this.widthRatio = widthRatio;
+    this.height = height;
     this.xRatio = xRatio;
     this.y = y;
-    this.widthRatio = widthRatio;
   }
 
   getId(): string{
@@ -80,6 +85,7 @@ export abstract class MaterialData {
   setIsSelected(isSelected: boolean){
     this.isSelected = isSelected;
   }
+
   // clone(): MaterialData{
   //   const newMaterialData = new MaterialData(
 
@@ -245,28 +251,67 @@ export const blockTypes: { [key: string]: any } = {
 
 export class BlockType1Data extends MaterialData {
   imageUrl = "dalle.png";
-  colorForTests = "blue";
-  constructor(id:string, xRatio:number, y:number, widthRatio:number){
-    super(id, xRatio, y, widthRatio )
+  colorForTests = blockTypes['Type1']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
   }
 }
 
 export class BlockType2Data extends MaterialData {
   imageUrl = "dalle.png";
-  colorForTests = "green";
-  constructor(id:string, xRatio:number, y:number, widthRatio:number){
-    super(id, xRatio, y, widthRatio )
+  colorForTests = blockTypes['Type2']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
   }
 }
 
 export class BlockType3Data extends MaterialData {
   imageUrl = "dalle.png";
-  colorForTests = "yellow";
-  constructor(id:string, xRatio:number, y:number, widthRatio:number){
-    super(id, xRatio, y, widthRatio )
+  colorForTests = blockTypes['Type3']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
   }
 }
 
+export class BlockType4Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = blockTypes['Type4']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
+  }
+}
+
+export class BlockType5Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = blockTypes['Type5']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
+  }
+}
+
+export class BlockType6Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = blockTypes['Type6']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
+  }
+}
+
+export class BlockType7Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = blockTypes['Type7']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
+  }
+}
+
+export class BlockType8Data extends MaterialData {
+  imageUrl = "dalle.png";
+  colorForTests = blockTypes['Type8']['colorForTests'];
+  constructor(widthRatio:number, height:number, xRatio:number, y:number){
+    super(widthRatio, height, xRatio, y)
+  }
+}
 // class BlockType{
 //   name:string;
 //   imageUrl:string;
@@ -298,6 +343,27 @@ export const getPlanLimit = (direction:Direction, planHeight:number): number => 
         return planHeight;
     default:
         return 0;
+  }
+}
+
+export const createBlockByTypeName = (typeName:string, width:number, height:number, x:number, y:number): MaterialData => {
+  switch(typeName){
+    case "Type2":
+      return new BlockType2Data(width, height, x, y);
+    case "Type3":
+      return new BlockType3Data(width, height, x, y);
+    case "Type4":
+      return new BlockType4Data(width, height, x, y);
+    case "Type5":
+      return new BlockType5Data(width, height, x, y);
+    case "Type6":
+      return new BlockType6Data(width, height, x, y);
+    case "Type7":
+      return new BlockType7Data(width, height, x, y);
+    case "Type8":
+      return new BlockType8Data(width, height, x, y);
+    default:
+        return new BlockType1Data(width, height, x, y);
   }
 }
 
@@ -340,4 +406,17 @@ export class KonvaPlanHandler {
     const blocEnd = bloc.getEnd(direction);
     return KonvaPlanHandler.valueOverflow(blocEnd, direction);
     }
+}
+
+export class StateSpace{
+  width;
+  height;
+  x;
+  y;
+  constructor(width:number, height:number, x:number, y:number){
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+  }
 }

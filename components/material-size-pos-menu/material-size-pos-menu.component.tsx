@@ -425,15 +425,15 @@ const MaterialSizePosMenu: React.FC = () => {
 
             if(direction === Direction.ToLeft || direction === Direction.ToRight){
 
-                let inputValueFloat: number = parseInt(e.currentTarget.value);
+                let inputValueFloat: number = parseFloat(e.currentTarget.value);
                 if(!inputValueFloat) {
                     setMaterialWidthInputVal("");
-                    setSelectedMaterialsSize(parseInt(minWidth), direction);
+                    setSelectedMaterialsSize(parseFloat(minWidth), direction);
                     return;
                 };
         
-                let minWidthFloat: number = parseInt(minWidth);
-                let maxWidthFloat: number = parseInt(maxWidth);
+                let minWidthFloat: number = parseFloat(minWidth);
+                let maxWidthFloat: number = parseFloat(maxWidth);
         
                 let nextValue: string;
         
@@ -445,17 +445,17 @@ const MaterialSizePosMenu: React.FC = () => {
                     nextValue = e.currentTarget.value;
                 }
                 setMaterialWidthInputVal(nextValue);
-                setSelectedMaterialsSize(parseInt(nextValue), direction);
+                setSelectedMaterialsSize(parseFloat(nextValue), direction);
             } else{
-                let inputValueFloat: number = parseInt(e.currentTarget.value);
+                let inputValueFloat: number = parseFloat(e.currentTarget.value);
                 if(!inputValueFloat) {
                     setMaterialHeightInputVal("");
-                    setSelectedMaterialsSize(parseInt(minHeight), direction);
+                    setSelectedMaterialsSize(parseFloat(minHeight), direction);
                     return;
                 };
         
-                let minHeightFloat: number = parseInt(minHeight);
-                let maxHeightFloat: number = parseInt(maxHeight);
+                let minHeightFloat: number = parseFloat(minHeight);
+                let maxHeightFloat: number = parseFloat(maxHeight);
         
                 let nextValue: string;
         
@@ -467,7 +467,7 @@ const MaterialSizePosMenu: React.FC = () => {
                     nextValue = e.currentTarget.value;
                 }
                 setMaterialHeightInputVal(nextValue);
-                setSelectedMaterialsSize(parseInt(nextValue), direction);
+                setSelectedMaterialsSize(parseFloat(nextValue), direction);
             }
 
 
@@ -803,15 +803,15 @@ const MaterialSizePosMenu: React.FC = () => {
                 return;
             }
 
-            let inputValueFloat: number = parseInt(e.currentTarget.value);
+            let inputValueFloat: number = parseFloat(e.currentTarget.value);
             if(!inputValueFloat) {
                 setMaterialHeightInputVal("");
-                setSelectedMaterialsHeight(parseInt(minHeight), bottomToTop);
+                setSelectedMaterialsHeight(parseFloat(minHeight), bottomToTop);
                 return;
             };
     
-            let minHeightFloat: number = parseInt(minHeight);
-            let maxHeightFloat: number = parseInt(maxHeight);
+            let minHeightFloat: number = parseFloat(minHeight);
+            let maxHeightFloat: number = parseFloat(maxHeight);
     
             let nextValue: string;
     
@@ -823,12 +823,12 @@ const MaterialSizePosMenu: React.FC = () => {
                 nextValue = e.currentTarget.value;
             }
             setMaterialHeightInputVal(nextValue);
-            setSelectedMaterialsHeight(parseInt(nextValue), bottomToTop);
+            setSelectedMaterialsHeight(parseFloat(nextValue), bottomToTop);
       }, [dispatch, materialDataDict]);
 
 
     const handleOnBlur = (e:React.FormEvent<HTMLInputElement>) => {
-        let inputValueFloat: number = parseInt(e.currentTarget.value);
+        let inputValueFloat: number = parseFloat(e.currentTarget.value);
         if(!inputValueFloat) {
             switch(e.currentTarget.name){
                 case("material-width-number-input"):
@@ -839,7 +839,7 @@ const MaterialSizePosMenu: React.FC = () => {
                     break;
             }
             // setMaterialHeightInputVal(minHeight);
-            // setSelectedMaterialsHeight(parseInt(minHeight));
+            // setSelectedMaterialsHeight(parseFloat(minHeight));
             return;
         };
     }
@@ -921,14 +921,14 @@ const MaterialSizePosMenu: React.FC = () => {
                         onBlur={handleOnBlur}/>
                     <span className={`${styles['size-unit']}`}>px</span>
                 </div>
-                <div className={`${styles['push-buttons-wrapper']}`} >
+                {/* <div className={`${styles['push-buttons-wrapper']}`} >
                     <button className={`${styles['push-button']} ${styles['push-up-button']}`} onTouchEnd={pushUpMaterialsMemo}>&#8593;</button>
                     <div className={`${styles['push-left-right-buttons-wrapper']}`}>
                         <button className={`${styles['push-button']} ${styles['push-left-button']}`} onTouchEnd={pushLeftMaterialsMemo}>&#8592;</button>
                         <button className={`${styles['push-button']} ${styles['push-right-button']}`} onTouchEnd={pushRightMaterialsMemo}>&#8594;</button>
                     </div>
                     <button className={`${styles['push-button']} ${styles['push-down-button']}`} onTouchEnd={pushDownMaterialsMemo}>&#8595;</button>
-                </div>
+                </div> */}
             </div>
         </div>
         );

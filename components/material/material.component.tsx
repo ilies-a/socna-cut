@@ -20,10 +20,10 @@ const colorsForTests = [
 const colorsForTestsDict:{ [key: string]: string } = {};
 
 type MaterialProps = {
-    id: string,
+  blockId: string
   };
 
-const Material: React.FC<MaterialProps> = ({id}) => {
+const Material: React.FC<MaterialProps> = ({blockId}) => {
     const dispatch = useDispatch();
     const materialDataDict:{ [key: string]: MaterialData } = useSelector(selectMaterialDataDict);
     const [image] = useImage('dalle.png');
@@ -43,9 +43,9 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     //   if(loadStatus === "loaded")alert(loadStatus);
     // },[loadStatus]);
 
-    useEffect(()=>{
-      colorsForTestsDict[id] = colorsForTests.shift() || "grey";
-    },[id]);
+    // useEffect(()=>{
+    //   colorsForTestsDict[id] = colorsForTests.shift() || "grey";
+    // },[id]);
 
     const materialXFromRatio = (xRatio:number):number => {
       return xRatio * window.innerWidth * KONVA_WIDTH_SCALE / 100;
@@ -54,9 +54,9 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     const xMemo = useMemo(
       () => {
         // console.log("widthMemo update", test)
-          return materialXFromRatio(materialDataDict[id].getXRatio());
+          return materialXFromRatio(materialDataDict[blockId].getXRatio());
       },
-      [materialDataDict, id]
+      [materialDataDict, blockId]
     );
 
     const materialWidthFromRatio = (widthRatio:number):number => {
@@ -66,9 +66,9 @@ const Material: React.FC<MaterialProps> = ({id}) => {
     const widthMemo = useMemo(
         () => {
           // console.log("widthMemo update", test)
-            return materialWidthFromRatio(materialDataDict[id].getWidthRatio());
+            return materialWidthFromRatio(materialDataDict[blockId].getWidthRatio());
         },
-        [materialDataDict, id]
+        [materialDataDict, blockId]
       );
 
     // useEffect(() => {
@@ -89,12 +89,12 @@ const Material: React.FC<MaterialProps> = ({id}) => {
       
     const setIsSelected = useMemo(function () {
       return function (isSelected:boolean) {
-          const updatedMaterialData:MaterialData | undefined = materialDataDict[id];
+          const updatedMaterialData:MaterialData | undefined = materialDataDict[blockId];
           if (!updatedMaterialData) return;
           updatedMaterialData.setIsSelected(isSelected);
           dispatch(updateMaterialData(updatedMaterialData));
       }
-    }, [materialDataDict, id, dispatch]);
+    }, [materialDataDict, blockId, dispatch]);
 
     // const handleTouchEnd = useMemo(function () {
     //   return function () {
@@ -148,11 +148,11 @@ const Material: React.FC<MaterialProps> = ({id}) => {
   return (
     <Group         
       x = {xMemo}
-      y = {materialDataDict[id].getY()}>
+      y = {materialDataDict[blockId].getY()}>
       <Rect
         width = {widthMemo}
-        height = {materialDataDict[id].getHeight() - MATERIAL_STROKE}
-        fill= {colorsForTestsDict[id]} //for tests
+        height = {materialDataDict[blockId].getHeight() - MATERIAL_STROKE}
+        fill= {materialDataDict[blockId].colorForTests} //for tests
         // fillPatternImage = {image}
         stroke = {'black'}
         strokeWidth = {MATERIAL_STROKE}
@@ -160,13 +160,13 @@ const Material: React.FC<MaterialProps> = ({id}) => {
         onTouchEnd={selectMaterial}
         onMouseDown={() => {setIsSelected(true)}}
       />
-       <Text fontSize={12} text={materialDataDict[id].getId().slice(0, 3)}
-        wrap="char" align="center" />
+       {/* <Text fontSize={12} text={materialDataDict[blockId].getId().slice(0, 3)}
+        wrap="char" align="center" /> */}
 
-      {materialDataDict[id].getIsSelected() ? 
+      {materialDataDict[blockId].getIsSelected() ? 
       <Rect
         width = {widthMemo}
-        height = {materialDataDict[id].getHeight() - MATERIAL_STROKE}
+        height = {materialDataDict[blockId].getHeight() - MATERIAL_STROKE}
         fill="red"
         opacity={0.5}
         stroke = {'red'}
