@@ -103,7 +103,7 @@ const MaterialSizePosMenu: React.FC = () => {
 
     const bloc1EndExceedsBloc2Start = (bloc1NextEnd:number, bloc2:MaterialData, direction:Direction): number =>{
         let shift;
-        const tolerance = 1;
+        const tolerance = 0.1;
         switch(direction){
             case Direction.ToLeft:
             case Direction.ToTop:
