@@ -232,11 +232,11 @@ export const blockTypes: { [key: string]: any } = {
     },
     'Type5': {
       'name': 'Type5',
-      'colorForTests': 'cyan' 
+      'colorForTests': 'purple' 
     },
     'Type6': {
       'name': 'Type6',
-      'colorForTests': 'magenta' 
+      'colorForTests': 'lightgreen' 
     },
     'Type7': {
       'name': 'Type7',
@@ -244,7 +244,7 @@ export const blockTypes: { [key: string]: any } = {
     },
     'Type8': {
       'name': 'Type8',
-      'colorForTests': 'red' 
+      'colorForTests': 'magenta' 
     },
   };
 
